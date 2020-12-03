@@ -25,3 +25,4 @@ Imports:
 Suggests: 
     testthat,
     covr
+RoxygenNote: 7.1.1
