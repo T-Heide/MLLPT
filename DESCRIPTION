@@ -15,13 +15,15 @@ Imports:
   cowplot,
   reshape2,
   ggtree,
-  treeman,
+  treeman (>= 1.1.5),
   phangorn,
   reshape,
   magrittr,
   scales,
   ape,
-  checkmate
+  checkmate,
+  tidytree,
+  methods
 Suggests: 
     testthat,
     covr

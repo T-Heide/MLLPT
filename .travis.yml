@@ -4,3 +4,5 @@ language: R
 cache: packages
 bioc_packages: 
   - ggtree
+r_github_packages:
+  - DomBennett/treeman
