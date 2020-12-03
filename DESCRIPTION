@@ -23,4 +23,5 @@ Imports:
   ape,
   checkmate
 Suggests: 
-    testthat
+    testthat,
+    covr
