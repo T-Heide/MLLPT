@@ -8,5 +8,19 @@ Description: Maximum likelihood assignment of low-pass samples ...
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Depends: R (>= 3.5.0)
+Imports:
+  dplyr,
+  ggplot2,
+  cowplot,
+  reshape2,
+  ggtree,
+  treeman,
+  phangorn,
+  reshape,
+  magrittr,
+  scales,
+  ape,
+  checkmate
 Suggests: 
     testthat
