@@ -1,0 +1,12 @@
+Package: MLLPT
+Type: Package
+Title: Maximum likelihood assignment of low-pass samples
+Version: 0.1.0
+Author: Timon Heide <timon.heide@icr.ac.uk> [aut]
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: Maximum likelihood assignment of low-pass samples ...
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    testthat
