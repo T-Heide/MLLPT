@@ -15,7 +15,7 @@ Imports:
   cowplot,
   reshape2,
   ggtree,
-  treeman (>= 1.1.5),
+  treeman,
   phangorn,
   reshape,
   magrittr,

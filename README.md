@@ -1,6 +1,6 @@
 # MLLPT <img src='man/figures/logo.png' align="right" height="139" />
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.com/T-Heide/MLLPT.svg?token=cqqKUEunNazVxSmjTbrG&branch=master)](https://travis-ci.com/T-Heide/MLLPT)
+[![R-CMD-check](https://github.com/T-Heide/MLLPT/workflows/R-CMD-check/badge.svg)](https://github.com/T-Heide/MLLPT/actions)
 [![Codecov test coverage](https://codecov.io/gh/T-Heide/MLLPT/branch/master/graph/badge.svg?token=1M0X8H2FRY)](https://codecov.io/gh/T-Heide/MLLPT?branch=master)
 <!-- badges: end -->
 
