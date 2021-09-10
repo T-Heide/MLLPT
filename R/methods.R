@@ -550,3 +550,114 @@ get_mutation_ids_per_edge = function(tree, phydata) {
   return(muts_per_edge)
 }
 
+
+#' Function to load genotyping data from a file
+#'
+#' @param file Input file
+#' @param use Optional vector of mutation ids to use.
+#' @param cn_data Either a Genomic Ranges object containing cn and mm metadata columns or a data.frame with a id, cn and mm column.
+#'
+#' @return A tibble containing the genotyping data.
+#' @export
+load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
+
+  stopifnot(file.exists(as.character(file)))
+  stopifnot(is.null(use) | is.character(use))
+
+  if (!is.null(cn_data)) {
+    if (inherits(cn_data, "GenomicRanges")) {
+      stopifnot("cn" %in% names(S4Vectors::elementMetadata(cn_data)))
+    } else if (is.data.frame(cn_data)) {
+      stopifnot(c("id","cn") %in% colnames(cn_data))
+    } else {
+      stop("'cn_data' has to be a data.frame or GenomicRanges object.\n")
+    }
+  }
+
+  #---------------------------------------------
+
+  .parse_data_chunks =
+    function(x, pos) {
+
+      chunk_data =
+        x %>%
+        dplyr::filter(gsub("chr", "", chr) %in% 1:22) %>%
+        dplyr::filter(source == "S") %>%
+        dplyr::mutate(id=sprintf("%s:%d_%s/%s", chr, pos, ref, alt)) %>%
+        dplyr::mutate(vaf = alt_count / depth) %>%
+        dplyr::filter(id %in% use | is.null(use)) %>%
+        dplyr::mutate(copy_number = NA, mm = NA)
+
+
+      if (!is.null(cn_data)) {
+        if (inherits(cn_data, "GenomicRanges")) {
+          # 1) GRanges
+
+          mdata_gr = with(chunk_data, GenomicRanges::GRanges(chr, IRanges::IRanges(pos, pos)))
+          ol = GenomicRanges::findOverlaps(mdata_gr, cn_data, type="any", select="first")
+          chunk_data$copy_number = cn_data$cn[ol]
+
+          # mm col
+          if ("mm" %in% names(S4Vectors::elementMetadata(cn_data))) {
+            chunk_data$mm = cn_data$mm[ol]
+          } else {
+            warning(paste0("For file ", basename(file), ": mutation multiplicity data missing! Assuming mm = 1.\n"))
+            chunk_data$mm[!is.na(chunk_data$copy_number)] = 1
+          }
+
+        } else if (is.data.frame(cn_data)) {
+          # 2) data.frame
+
+          # cn col
+          mt = match(chunk_data$id, as.character(cn_data$id))
+          chunk_data$copy_number = cn_data$cn[mt]
+
+          # mm col
+          if ("mm" %in% colnames(cn_data)) {
+            chunk_data$mm = cn_data$mm[mt]
+          } else {
+            warning(paste0("For file ", basename(file), ": mutation multiplicity data missing! Assuming mm = 1.\n"))
+            chunk_data$mm[!is.na(chunk_data$copy_number)] = 1
+          }
+        }
+      }  else {
+        # 3) No CN data
+
+        warning(paste0("For file ", basename(file), ": CN data missing, assuming CN 1+1.\n"))
+        chunk_data$copy_number = 2
+        chunk_data$mm = 1
+      }
+
+      parsed_data <<- rbind(parsed_data, chunk_data)
+
+      return(!all(x$source == "GL"))
+    }
+
+  #---------------------------------------------
+
+  # parse data in chunks, stop once reading germline mutations
+  parsed_data = NULL
+
+  tryCatch({
+    readr::read_tsv_chunked(
+      as.character(file),
+      .parse_data_chunks,
+      chunk_size = 10000,
+      col_types = "-cicc--iic",
+     progress = FALSE
+    )
+  }, error=function(e) {
+    cat(paste0("Failed to load file '", basename(file), "'. Wrong file format?\n"))
+    print(e)
+    parsed_data <<- NULL
+  })
+
+  if (!all(is.na(parsed_data$copy_number))) {
+    parsed_data =
+      parsed_data %>%
+      dplyr::filter(!is.na(copy_number))
+  }
+
+  return(parsed_data)
+}
+

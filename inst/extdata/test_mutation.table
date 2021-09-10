@@ -1,0 +1,6 @@
+sample	chr	pos	ref	alt	annotation	ref_count	alt_count	depth	source
+TEST	chr1	1	A	T	.	23	3	26	S
+TEST	chr1	2	C	G	.	74	2	78	S
+TEST	chr1	3	G	C	.	63	1	65	S
+TEST	chr1	4	T	A	.	54	3	57	S
+TEST	chr1	5	T	A	.	54	3	57	G

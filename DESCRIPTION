@@ -1,9 +1,9 @@
 Package: MLLPT
 Type: Package
-Title: Maximum likelihood assignment of low-pass samples to trees
+Title: Maximum Likelihood Assignment of Low-Pass Samples to Trees
 Version: 0.1.0
 Author: Timon Heide <timon.heide@icr.ac.uk> [aut]
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: Timon Heide <timon.heide@icr.ac.uk>
 Description: Maximum likelihood assignment of low-pass samples.
 License: GPL-3
 Encoding: UTF-8
@@ -23,8 +23,12 @@ Imports:
   ape,
   checkmate,
   tidytree,
-  methods
+  methods,
+  readr
 Suggests: 
     testthat,
-    covr
+    covr,
+    GenomicRanges,
+    IRanges,
+    S4Vectors
 RoxygenNote: 7.1.1
