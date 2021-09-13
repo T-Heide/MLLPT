@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • MLLLP</title>
+<title>Function to load genotyping data from a file — load_genotyping_file • MLLLP</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,8 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Function to load genotyping data from a file — load_genotyping_file" />
+<meta property="og:description" content="Function to load genotyping data from a file" />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -100,90 +101,41 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Function to load genotyping data from a file</h1>
+    
+    <div class="hidden name"><code>load_genotyping_file.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Function to load genotyping data from a file</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>load_genotyping_file</span><span class='op'>(</span><span class='va'>file</span>, use <span class='op'>=</span> <span class='cn'>NULL</span>, cn_data <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="add_lowpass_sampled.html">add_lowpass_sampled()</a></code> </p>
-        </td>
-        <td><p>MLE assignment of (low-depth) samples to a tree</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="example_lp_data.html">example_lp_data</a></code> </p>
-        </td>
-        <td><p>Simulated low-pass WGS dataset for MLLLP</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_mutation_ids_per_edge.html">get_mutation_ids_per_edge()</a></code> </p>
-        </td>
-        <td><p>Internal function used to get mutation ids for each edge of the tree.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="load_genotyping_file.html">load_genotyping_file()</a></code> </p>
-        </td>
-        <td><p>Function to load genotyping data from a file</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_lp_loglik.html">plot_lp_loglik()</a></code> </p>
-        </td>
-        <td><p>Plot showing log-likelihood of all possible edges.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_lp_loglik_edge.html">plot_lp_loglik_edge()</a></code> </p>
-        </td>
-        <td><p>Plot showing log-likelihood of fraction mutated from most likely edge.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_sample_data.html">plot_sample_data()</a></code> </p>
-        </td>
-        <td><p>Plot showing ML estimate of sample parameters.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_tree.html">plot_tree()</a></code> </p>
-        </td>
-        <td><p>A internal function used for the plotting of trees</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="remove_root_tip.html">remove_root_tip()</a></code> </p>
-        </td>
-        <td><p>Internal function that removes the reference tip from a tree</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>file</th>
+      <td><p>Input file</p></td>
+    </tr>
+    <tr>
+      <th>use</th>
+      <td><p>Optional vector of mutation ids to use.</p></td>
+    </tr>
+    <tr>
+      <th>cn_data</th>
+      <td><p>Either a Genomic Ranges object containing cn and mm metadata columns or a data.frame with a id, cn and mm column.</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A tibble containing the genotyping data.</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
