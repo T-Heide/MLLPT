@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>MLE assignment of (low-depth) samples to a tree — add_lowpass_sampled • MLLLP</title>
+<title>MLE assignment of (low-depth) samples to a tree — add_lowpass_sampled • MLLPT</title>
 
 
 <!-- jquery -->
@@ -71,7 +71,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">MLLLP</a>
+        <a class="navbar-link" href="../index.html">MLLPT</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
@@ -119,7 +119,6 @@
   min_confidence <span class='op'>=</span> <span class='fl'>0</span>,
   vaf_bkgr <span class='op'>=</span> <span class='fl'>0.01</span>,
   purity_estimates <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>sample_data</span><span class='op'>)</span><span class='op'>)</span>,
-  split_states <span class='op'>=</span> <span class='cn'>TRUE</span>,
   min_edge_length <span class='op'>=</span> <span class='fl'>0</span>,
   return_details <span class='op'>=</span> <span class='cn'>FALSE</span>,
   optimize_values <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -127,8 +126,6 @@
   max_loss_frac <span class='op'>=</span> <span class='fl'>0</span>,
   loss_frac_init <span class='op'>=</span> <span class='fl'>0</span>,
   rescale_tree <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  nbtrials <span class='op'>=</span> <span class='fl'>20</span>,
-  use_genetic_algorithm <span class='op'>=</span> <span class='cn'>FALSE</span>,
   control <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
@@ -161,10 +158,6 @@
       <td><p>(optional) purity of the samples. Must be the same length as the sample_data list (default 1.0, pure samples).</p></td>
     </tr>
     <tr>
-      <th>split_states</th>
-      <td><p>(optional) logical flag indicating if the position along the edge should be estimated. Otherwise samples are only assigned to nodes (default: true).</p></td>
-    </tr>
-    <tr>
       <th>min_edge_length</th>
       <td><p>(optional) numeric value indicating the length of the edges to the added tips relative to the tree height (default: 0.01).</p></td>
     </tr>
@@ -191,14 +184,6 @@
     <tr>
       <th>rescale_tree</th>
       <td><p>(optional) flag indicating if the tree should be rescaled (default: true).</p></td>
-    </tr>
-    <tr>
-      <th>nbtrials</th>
-      <td><p>(optional) number of restarts for optimisation (default: 20).</p></td>
-    </tr>
-    <tr>
-      <th>use_genetic_algorithm</th>
-      <td><p>(optional) logical should DEoptim::DEoptim be used? (default: FALSE).</p></td>
     </tr>
     <tr>
       <th>control</th>

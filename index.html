@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maximum likelihood assignment of low-pass samples to trees • MLLLP</title>
+<title>Maximum likelihood assignment of low-pass samples to trees • MLLPT</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -30,7 +30,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">MLLLP</a>
+        <a class="navbar-link" href="index.html">MLLPT</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
@@ -59,13 +59,13 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="mlllp-" class="section level1">
+<div id="mllpt-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#mlllp-" class="anchor"></a>MLLLP <img src="reference/figures/logo.png" align="right" height="139">
+<a href="#mllpt-" class="anchor"></a>MLLPT <img src="reference/figures/logo.png" align="right" height="139">
 </h1></div>
 <!-- badges: start -->
 
-<p>Maximum likelihood assignment of low-pass samples (MLLLP)</p>
+<p>Maximum likelihood assignment of low-pass samples (MLLPT)</p>
 <hr>
 <div id="installation" class="section level4">
 <h4 class="hasAnchor">
@@ -73,26 +73,26 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'dombennett/treeman'</span><span class="op">)</span> <span class="co"># package requires newest version of treeman (not on CRAN)</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"T-Heide/MLLLP"</span><span class="op">)</span></code></pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"T-Heide/MLLPT"</span><span class="op">)</span></code></pre></div>
 <hr>
 </div>
 <div id="help-and-support" class="section level4">
 <h4 class="hasAnchor">
 <a href="#help-and-support" class="anchor"></a>Help and support</h4>
-<p><a href="https://t-heide.github.io/MLLLP/"><img src="https://img.shields.io/badge/GitHub%20Pages-https://t--heide.github.io/MLLLP/-informational"></a></p>
+<p><a href="https://t-heide.github.io/MLLPT/"><img src="https://img.shields.io/badge/GitHub%20Pages-https://t--heide.github.io/MLLPT/-informational"></a></p>
 <hr>
 </div>
 <div id="getting-started" class="section level4">
 <h4 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting started</h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">MLLLP</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">phagorn</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">MLLPT</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/KlausVigo/phangorn">phangorn</a></span><span class="op">)</span></code></pre></div>
 <div id="1-input-data" class="section level5">
 <h5 class="hasAnchor">
 <a href="#1-input-data" class="anchor"></a>1) Input data</h5>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"example_lp_data"</span>, package<span class="op">=</span><span class="st">"MLLLP"</span><span class="op">)</span> <span class="co"># example dataset included in the package</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"example_lp_data"</span>, package<span class="op">=</span><span class="st">"MLLPT"</span><span class="op">)</span> <span class="co"># example dataset included in the package</span>
 
 <span class="co"># 1/3 a phylogenetic tree</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">tree</span><span class="op">)</span></code></pre></div>
@@ -132,7 +132,7 @@ The states are 0 1 </code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tree_with_lp_added</span> <span class="op">=</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">example_lp_data</span>,  <span class="op">{</span>
-    <span class="fu">MLLLP</span><span class="fu">::</span><span class="fu"><a href="reference/add_lowpass_sampled.html">add_lowpass_sampled</a></span><span class="op">(</span>
+    <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/add_lowpass_sampled.html">add_lowpass_sampled</a></span><span class="op">(</span>
       tree <span class="op">=</span> <span class="va">tree</span>, 
       phydata <span class="op">=</span> <span class="va">phydata</span>, 
       sample_data <span class="op">=</span> <span class="va">samples</span>, 
@@ -143,22 +143,12 @@ The states are 0 1 </code></pre>
 
 Processing sample: EPICC_C518_C1_G1_L1 (1/2)
 
-=&gt; Optimizing estimates for purity, background.
-
-iter    1 value 290.660471
-iter    2 value 193.103238
-iter    3 value 192.695988
-iter    4 value 192.692648
-iter    5 value 192.692647
-iter    6 value 192.692647
-final  value 192.692647 
-converged
 
 New values:
 
 - Background rate: 0.01 -&gt; 0 
-- Purity: 1 -&gt; 0.8314805 
-- MLL: -343.0637 -&gt; -192.6926 
+- Purity: 1 -&gt; 0.8313362 
+- MLL: -349.1069 -&gt; -192.6928 
 
 =&gt; Added sample (confidence: 1)
 
@@ -166,20 +156,12 @@ New values:
 
 Processing sample: EPICC_C518_D1_G1_L1 (2/2)
 
-=&gt; Optimizing estimates for purity, background.
-
-iter    1 value 788.666981
-iter    2 value 748.004120
-iter    3 value 733.611443
-iter    4 value 729.093070
-final  value 729.093070 
-stopped after 4 iterations
 
 New values:
 
-- Background rate: 0.01 -&gt; 0.000542891 
-- Purity: 1 -&gt; 0.5291986 
-- MLL: -852.8788 -&gt; -729.0931 
+- Background rate: 0.01 -&gt; 0.0007121943 
+- Purity: 1 -&gt; 0.6490007 
+- MLL: -886.1944 -&gt; -733.76 
 
 =&gt; Added sample (confidence: 1)
 
@@ -189,16 +171,16 @@ New values:
 <h5 class="hasAnchor">
 <a href="#3-plots" class="anchor"></a>3) Plots</h5>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">MLLLP</span><span class="fu">::</span><span class="fu"><a href="reference/plot_tree.html">plot_tree</a></span><span class="op">(</span><span class="va">tree_with_lp_added</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_tree.html">plot_tree</a></span><span class="op">(</span><span class="va">tree_with_lp_added</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/tree_plus_lp_example.png?raw=true" width="350"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">MLLLP</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik.html">plot_lp_loglik</a></span><span class="op">(</span><span class="va">tree_with_lp_added</span><span class="op">)</span> <span class="op">+</span> <span class="fu">coord_flip</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik.html">plot_lp_loglik</a></span><span class="op">(</span><span class="va">tree_with_lp_added</span><span class="op">)</span> <span class="op">+</span> <span class="fu">coord_flip</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/loglik_plus_lp_example.png?raw=true" width="200"></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">MLLLP</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik_edge.html">plot_lp_loglik_edge</a></span><span class="op">(</span><span class="va">tree_with_lp_added</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik_edge.html">plot_lp_loglik_edge</a></span><span class="op">(</span><span class="va">tree_with_lp_added</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/loglik_edge_plus_lp_example.png?raw=true" width="850"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">MLLLP</span><span class="fu">::</span><span class="fu"><a href="reference/plot_sample_data.html">plot_sample_data</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_sample_data.html">plot_sample_data</a></span><span class="op">(</span>
   <span class="va">tree_with_lp_added</span>, 
   external_purity_estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.90</span>, <span class="fl">0.48</span><span class="op">)</span>, 
   label_external_purity <span class="op">=</span> <span class="st">"GT"</span>
@@ -241,8 +223,8 @@ New values:
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/T-Heide/MLLLP/actions"><img src="https://github.com/T-Heide/MLLLP/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/T-Heide/MLLLP?branch=master"><img src="https://codecov.io/gh/T-Heide/MLLLP/branch/master/graph/badge.svg?token=1M0X8H2FRY" alt="Codecov test coverage"></a></li>
+<li><a href="https://github.com/T-Heide/MLLPT/actions"><img src="https://github.com/T-Heide/MLLPT/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/T-Heide/MLLPT?branch=master"><img src="https://codecov.io/gh/T-Heide/MLLPT/branch/master/graph/badge.svg?token=1M0X8H2FRY" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 </div>
