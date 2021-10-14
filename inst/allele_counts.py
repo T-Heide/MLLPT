@@ -1,6 +1,5 @@
-############################################################
+#!/usr/bin/env python
 # allele_counts.py
-############################################################
 
 import sys
 import os
@@ -38,7 +37,7 @@ if not os.access(vcf_somatic, os.R_OK):
     raise SystemExit("Error: Somatic VCF file '"+vcf_somatic+\
                      "' does not exist or unreadable.\n\n"+usage_string)
 
-if not os.access(vcf_germline, os.R_OK) and vcf_germline is not None:
+if vcf_germline is not None and not os.access(vcf_germline, os.R_OK):
     raise SystemExit("Error: Germline VCF file '"+vcf_germline+\
                      "' does not exist or unreadable.\n\n"+usage_string)
 
