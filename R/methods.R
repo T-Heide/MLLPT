@@ -138,7 +138,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   per_edge_max_ll_data = list()
   per_edge_ll_data = list()
   per_edge_mdata = list()
-  tree$node.labels = paste0("N", seq_len(tree$Nnode))
+  tree$node.label = paste0("N", seq_len(tree$Nnode))
   tree_tm = as(tree, 'TreeMan') #
   purity_optim = c()
   vaf_optim = c()
@@ -395,12 +395,12 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
         sid = ifelse(length(tree$tip.label) >= wh_node_idx,
                      tree$tip.label[wh_node_idx],
-                     tree$node.labels[wh_node_idx - length(tree$tip.label)])
+                     tree$node.label[wh_node_idx - length(tree$tip.label)])
 
 
         # relative position to add to
         range_sid = spns[sid,]
-        rel_pos = 1 - (pi_opt * runif(1, min=0.999, max=1.001))
+        rel_pos = 1 - pi_opt
         if (rel_pos <= 0) rel_pos = min_edge_length
         if (rel_pos >= 1) rel_pos = 1 - min_edge_length
 
@@ -408,6 +408,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         # location in tree
         pos_add = range_sid[["end"]] + (range_sid[["start"]] - range_sid[["end"]]) * rel_pos
         pos_end = pos_add - tree_age_o * min_edge_length
+
         if (pos_end < 0) pos_end = 0 # don't increase tree age!
 
         # find correct_modified sid:
@@ -450,10 +451,10 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         new_tip = paste0(sample, " (Added p = ", signif(max(p_states, na.rm=TRUE), 6), ")")
         added_tips[[sample]] = new_tip
 
-      }, error=function(e) {
-        cat("=> Error: Failed to add sample!\n")
-        print(e)
-      })
+      })#, error=function(e) {
+        #cat("=> Error: Failed to add sample!\n")
+        #print(e)
+      #})
     }
   }
   cat("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=\n\n")
