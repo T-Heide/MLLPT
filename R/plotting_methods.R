@@ -18,7 +18,16 @@ plot_lp_loglik =
       min_confidence = 1
     }
 
-    d_edge = d$max_ll_per_edge
+    if (d$inital_values$n_bootstraps) {
+      d_edge =
+        lapply(d$bootstrap_results, function(x) {
+          sapply(names(d$max_ll_per_edge[[1]]), function(y) {
+            log((sum(x$edge == y) + 1) / (length(x$edge)+1))
+          })
+        })
+    } else {
+      d_edge = d$max_ll_per_edge
+    }
 
     if (!is.null(subset)) {
       d_edge = d_edge[names(d_edge) %in% subset]
@@ -48,7 +57,7 @@ plot_lp_loglik =
       theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1)) +
       xlab("") +
       ylab("Tree edge") +
-      labs(fill="p(Edge)") +
+      labs(fill="P(Edge)") +
       scale_fill_continuous(trans="log10", low="gray98", high="red") +
       scale_shape_identity()
 
@@ -148,6 +157,93 @@ plot_lp_loglik_edge =
   }
 
 
+#' Plot showing distribution of edge positions during boostraping.
+#'
+#' @param d Object returned from 'add_lowpass_sampled'.
+#' @param labeller_function (optional) function returning a modified version of sample labels.
+#' @param subset (optional) character vector defining a subset of samples to plot.
+#'
+#' @return A ggplot object
+#' @export
+#' @import ggplot2
+#'
+plot_lp_position_edge =
+  function(d, labeller_function=NULL, subset=NULL) {
+
+    if (d$inital_values$n_bootstraps == 0) {
+      warning(
+        "Need bootstrap data to use",
+        sQuote("plot_lp_position_edge"),
+        ".\n",
+        " => Please call ",
+        sQuote("add_lowpass_sampled"),
+        " with ",
+        sQuote("n_bootstraps > 0"),
+        ".\n"
+      )
+
+
+      pl =
+        ggplot(NULL) +
+        cowplot::theme_cowplot()
+
+      return(pl)
+    }
+
+    data_ml = d$per_sample_result
+    data_bootstrap = reshape2::melt(d$bootstrap_results, measure.vars=c())
+
+    if (!is.null(subset)) {
+      data_bootstrap = data_bootstrap %>% filter(L1 %in% subset)
+      data_ml = data_ml %>% filter(sample %in% subset)
+    }
+
+    if (!is.null(labeller_function)) {
+      data_bootstrap$sample_mod = labeller_function(data_bootstrap$L1)
+      data_ml$sample_mod = labeller_function(data_ml$sample)
+    } else {
+      data_bootstrap$sample_mod = data_bootstrap$L1
+      data_ml$sample_mod = data_ml$sample
+    }
+
+    # modify edge labels
+    edge_lab =
+      paste0(
+        seq_along(d$inital_values$tree$edge[,1]),
+        " (", d$inital_values$tree$edge[,1],
+        "-> ", d$inital_values$tree$edge[,2], ")"
+      ) %>% magrittr::set_names(seq_along(.))
+
+
+    anc_list = phangorn::Ancestors(d$inital_values$tree, type = "all")
+    for (i in seq_along(anc_list)) anc_list[[i]] = c(rev(anc_list[[i]]), i)
+    node_order = unique(unlist(anc_list))
+    edge_order = order(match(d$inital_values$tree$edge[,2], node_order), decreasing = FALSE)
+    edge_lab = edge_lab[edge_order]
+
+    data_bootstrap = data_bootstrap %>%
+      dplyr::mutate(edge=factor(edge, names(edge_lab), edge_lab, ordered=TRUE))
+
+    data_ml = data_ml %>%
+      dplyr::mutate(edge=factor(edge, names(edge_lab), edge_lab, ordered=TRUE))
+
+    d_plot =
+      data_bootstrap %>%
+      ggplot(aes(x=pos, after_stat(count)/d$inital_values$n_bootstraps)) +
+      cowplot::theme_cowplot() +
+      geom_histogram(breaks=seq(0, 1, by=0.05)) +
+      facet_grid(sample_mod~edge, drop = FALSE, scales = "free_y") +
+      xlab("Position on edge") +
+      ylab("Density") +
+      geom_vline(data=data_ml, aes(xintercept=pi), linetype=3, color="red") +
+      guides(color="none") +
+      scale_x_continuous(n.breaks = 2, limits = c(0,1))
+
+    d_plot
+  }
+
+
+
 #' Plot showing ML estimate of sample parameters.
 #'
 #' @param d Object returned from 'add_lowpass_sampled'.
@@ -167,7 +263,6 @@ plot_sample_data =
       return(NULL)
     }
 
-
     per_sample_results = d$per_sample_results
 
     if (!is.null(external_purity_estimate)) {
@@ -182,13 +277,40 @@ plot_sample_data =
       dplyr::mutate(sample=labeller_function(sample)) %>%
       dplyr::mutate(sample=factor(sample, rev(sort(unique(sample))), ordered = TRUE))
 
+    if (d$inital_values$n_bootstraps) {
+      ci_est = d$bootstrap_results %>%
+        lapply(dplyr::select, -edge) %>%
+        lapply(apply, 2, quantile, c(0.025, 0.975), names=FALSE) %>%
+        reshape2::melt() %>%
+        dplyr::mutate(Var1=factor(Var1, c(1,2), c("lower", "upper"))) %>%
+        reshape2::dcast(L1~Var1+Var2) %>%
+        dplyr::mutate(sample=labeller_function(L1))
+    } else {
+      ci_est = NULL
+    }
+
     bkgr_vaf_data = data.frame(x=d$inital_values$vaf_bkgr)
     limit_y = min(c(per_sample_results$background_vaf, bkgr_vaf_data$x), na.rm=TRUE) / 10
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     plot_vaf =
       per_sample_results %>%
       ggplot(aes(x=sample, y=background_vaf+1e-6)) +
-      cowplot::theme_cowplot() +
+      cowplot::theme_cowplot()
+
+    if (!is.null(ci_est)) {
+      plot_vaf = plot_vaf +
+        geom_errorbar(
+          data = ci_est,
+          aes(x = sample, ymin = lower_bkg+1e-6, ymax = upper_bkg+1e-6),
+          inherit.aes = FALSE,
+          alpha = 0.8,
+          width = 0.2
+        )
+    }
+
+    plot_vaf = plot_vaf +
       geom_point() +
       geom_hline(data=bkgr_vaf_data, aes(yintercept = x, linetype="Initial value")) +
       coord_flip() +
@@ -201,12 +323,26 @@ plot_sample_data =
       cowplot::background_grid()
 
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     plot_purity =
       per_sample_results %>%
       ggplot(aes(x=sample, y=purity)) +
       cowplot::theme_cowplot() +
-      geom_segment(aes(xend=sample, yend=initial_purity), linetype=3) +
+      geom_segment(aes(xend=sample, yend=initial_purity), linetype=3)
+
+    if (!is.null(ci_est)) {
+      plot_purity = plot_purity +
+        geom_errorbar(
+          data = ci_est,
+          aes(x = sample, ymin = lower_purity, ymax = upper_purity),
+          inherit.aes = FALSE,
+          alpha = 0.8,
+          width = 0.2
+        )
+    }
+
+    plot_purity = plot_purity +
       geom_point(size=2) +
       geom_point(aes(shape="Initial value", color="Initial value", y=initial_purity), size=2) +
       scale_y_continuous(n.breaks = 4, limits = c(0,1)) +
@@ -227,10 +363,26 @@ plot_sample_data =
     }
 
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
     plot_loss_frac =
       per_sample_results %>%
       ggplot(aes(x=sample, y=loss_frac)) +
-      cowplot::theme_cowplot() +
+      cowplot::theme_cowplot()
+
+    if (!is.null(ci_est)) {
+      plot_loss_frac = plot_loss_frac +
+        geom_errorbar(
+          data = ci_est,
+          aes(x = sample, ymin = lower_loss, ymax = upper_loss),
+          inherit.aes = FALSE,
+          alpha = 0.8,
+          width = 0.2
+        )
+    }
+
+    plot_loss_frac = plot_loss_frac +
       geom_point(size=2) +
       coord_flip() +
       labs(color="", shape="") +
@@ -240,6 +392,9 @@ plot_sample_data =
       theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())+
       cowplot::background_grid() +
       scale_y_continuous(n.breaks = 3, limits = c(0,NA))
+
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     plot_dp =

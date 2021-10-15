@@ -102,7 +102,9 @@ tree_with_lp_added =
       tree = tree, 
       phydata = phydata, 
       sample_data = samples, 
-      return_details = TRUE
+      return_details = TRUE, 
+      n_bootstraps = 1000, 
+      n_cores = 8
     )
   })
 ```
@@ -111,6 +113,7 @@ tree_with_lp_added =
     ## 
     ## Processing sample: EPICC_C518_C1_G1_L1 (1/2)
     ## 
+    ## Bootstrapping data 1000 times...
     ## 
     ## New values:
     ## 
@@ -124,14 +127,15 @@ tree_with_lp_added =
     ## 
     ## Processing sample: EPICC_C518_D1_G1_L1 (2/2)
     ## 
+    ## Bootstrapping data 1000 times...
     ## 
     ## New values:
     ## 
-    ## - Background rate: 0.01 -> 0.0001978821 
-    ## - Purity: 1 -> 0.5211217 
-    ## - MLL: -911.832 -> -727.613 
+    ## - Background rate: 0.01 -> 0.0001978852 
+    ## - Purity: 1 -> 0.5211199 
+    ## - MLL: -911.8326 -> -727.613 
     ## 
-    ## => Added sample (confidence: 1)
+    ## => Added sample (confidence: 0.997)
     ## 
     ## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -171,6 +175,15 @@ MLLPT::plot_lp_loglik_edge(
 ```
 
 <img src="README_files/figure-gfm/loglik_edge_plus_lp_example-1.png" width="850" />
+
+``` r
+MLLPT::plot_lp_position_edge(
+    tree_with_lp_added,
+    labeller_function = labeller_function
+  ) + ggplot2::theme(strip.text = ggplot2::element_text(size=9))
+```
+
+<img src="README_files/figure-gfm/edge_position_example-1.png" width="850" />
 
 ``` r
 MLLPT::plot_sample_data(

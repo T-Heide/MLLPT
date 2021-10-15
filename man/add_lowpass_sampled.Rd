@@ -19,6 +19,8 @@ add_lowpass_sampled(
   loss_frac_init = 0,
   rescale_tree = TRUE,
   control = NULL,
+  n_bootstraps = 0,
+  n_cores = 1,
   ...
 )
 }
@@ -50,6 +52,10 @@ add_lowpass_sampled(
 \item{rescale_tree}{(optional) flag indicating if the tree should be rescaled (default: true).}
 
 \item{control}{(optional) control passed to optimizer (default: NULL).}
+
+\item{n_bootstraps}{(optional) Number of bootstraps to perform (default: 0).}
+
+\item{n_cores}{(optional) Number of cores to use for bootstrapping (default: 0).}
 
 \item{...}{unused arguments.}
 }

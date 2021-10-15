@@ -14,11 +14,13 @@
 #' @param loss_frac_init  (optional) initial value of loss fraction (default: 0).
 #' @param rescale_tree (optional) flag indicating if the tree should be rescaled (default: true).
 #' @param control (optional) control passed to optimizer (default: NULL).
+#' @param n_bootstraps (optional) Number of bootstraps to perform (default: 0).
+#' @param n_cores (optional) Number of cores to use for bootstrapping (default: 0).
 #' @param ...  unused arguments.
 #' @return A tree object with the samples in 'sample_data' added to it.
 #' @export
 #' @import treeman
-add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf_bkgr=0.01, purity_estimates=rep(1, length(sample_data)), min_edge_length=0, return_details=FALSE, optimize_values=TRUE, max_vaf_bkgr=0.1, max_loss_frac = 0, loss_frac_init = 0, rescale_tree=TRUE, control=NULL, ...) {
+add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf_bkgr=0.01, purity_estimates=rep(1, length(sample_data)), min_edge_length=0, return_details=FALSE, optimize_values=TRUE, max_vaf_bkgr=0.1, max_loss_frac = 0, loss_frac_init = 0, rescale_tree=TRUE, control=NULL, n_bootstraps=0, n_cores=1, ...) {
 
   if (packageVersion("treeman") < '1.1.5'){
     stop('Please install treeman > 1.1.5 using remotes::install_github("DomBennett/treeman")\n')
@@ -106,6 +108,8 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   checkmate::assertTRUE(max_loss_frac >= loss_frac_init, add=al)
   checkmate::assertTRUE(max_vaf_bkgr >= vaf_bkgr, add=al)
   checkmate::assertFlag(rescale_tree, add=al)
+  checkmate::assertIntegerish(n_bootstraps, add=al)
+  checkmate::assertIntegerish(n_cores, add=al)
   checkmate::reportAssertions(al)
 
   if (max_vaf_bkgr > 0.1)
@@ -149,6 +153,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   mll = c()
   edges_samples = c()
   pi_samples = c()
+  bootstrap_results = list()
 
   # get tree and species ages:
   tree_age_o =  treeman::getAge(tree_tm)
@@ -210,9 +215,9 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     .ll_edge =
-      function(edge, pi_m, purity, bkg_rate) {
+      function(d, edge, pi_m, purity, bkg_rate) {
         v = purity
-        d = per_edge_data[[edge]]
+        d = d[[edge]]
 
         if (pi_m > 0) {
           vaf_m = (d$mm * v) / (v * d$cn + (1-v) * 2) # expected vaf for each mutation
@@ -228,7 +233,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         return(val)
       }
 
-    .ll_path = function(edge, pi_m, purity, bkg_rate, loss_frac) {
+    .ll_path = function(d, edge, pi_m, purity, bkg_rate, loss_frac) {
 
       edge = as.character(edge)
 
@@ -237,6 +242,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         sapply(
           anc_edge[[edge]],
           .ll_edge,
+          d = d,
           pi_m = 1 - loss_frac,
           purity = purity,
           bkg_rate = bkg_rate
@@ -246,6 +252,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         sapply(
           not_anc_edge[[edge]],
           .ll_edge,
+          d = d,
           pi_m = 0,
           purity = purity,
           bkg_rate = bkg_rate
@@ -254,6 +261,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
       ll_self =
         .ll_edge(
           edge,
+          d = d,
           pi_m = pi_m,
           purity = purity,
           bkg_rate = bkg_rate
@@ -263,70 +271,113 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
       sum(c(unlist(ll_mut), unlist(ll_bkg), unlist(ll_self)))
     }
 
+    .optimize_params = function(d, init, lower, upper, optim) {
+
+      edges = names(edge_to_node)
+
+      results = list(
+        per_edge_max_ll = magrittr::set_names(rep(NA, length(edges)), edges),
+        per_edge_opt_params = list(),
+        params = magrittr::set_names(init, c("pos","purity","bkg","loss")),
+        max_ll = -Inf,
+        edge_opt = NA
+      )
+
+      # initial values
+      .f_optim = function(e, p) {
+        args = init; args[optim] = p
+        do.call(.ll_path, c(list(d, e), as.list(args)))
+      }
+
+      for (e in edges) {
+
+        optim[1] = sum(d[[e]]$n) > 0
+
+        opt_new = optim(
+          par = init[optim],
+          function(p) -1 * .f_optim(e, p),
+          lower = lower[optim],
+          upper = upper[optim],
+          method = "L-BFGS-B",
+          control = c(list(ndeps=rep(1e-6, sum(optim))), control)
+        )
+
+        if (opt_new$convergence != 0){
+          stop(opt_new$message)
+        }
+
+        # store results of this edge
+        results$per_edge_max_ll[e] = -opt_new$value
+        results$per_edge_opt_params[[e]] = init
+        results$per_edge_opt_params[[e]][optim] = opt_new$par
+        names(results$per_edge_opt_params[[e]]) = c("pos","purity","bkg","loss")
+
+        if (-opt_new$value > results$max_ll) {
+          # if generally better then other update results
+          results$edge_opt = e
+          results$max_ll = -opt_new$value
+          results$params[optim] = opt_new$par
+        }
+      }
+
+      return(results)
+    }
+
+    .bootstrap = function(d, ...) {
+
+      # permutate data
+      i = as.numeric(unlist(sapply(d, function(x) seq_len(NROW(x)))))
+      e = rep(names(d), sapply(d, NROW))
+
+      n = as.numeric(unlist(sapply(d, "[", "weight")))
+      idx = sample(seq_along(i), sum(n), replace=TRUE, prob=n)
+      n_dash = table(idx)[as.character(seq_along(i))]; n_dash[is.na(n_dash)] = 0
+      for (j in seq_along(i)) d[[e[j]]]$weight[i[j]] = n_dash[j]
+
+      res = tryCatch({
+        .optimize_params(d, ...)},
+        error = function(e) return(NULL)
+      )
+
+      if (is.null(res)) return(NULL)
+
+      cbind(
+        data.frame(edge = res$edge_opt),
+        t(data.frame(res$params))
+      )
+    }
+
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     # Optimize the samples parameters? ####
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-    if (optimize_values) {
-      if (max_loss_frac) {
-        optim = c(TRUE, TRUE, TRUE, TRUE)
-      } else {
-        optim = c(TRUE, TRUE, TRUE, FALSE)
-      }
-    } else {
-      optim = c(TRUE, FALSE, FALSE, FALSE)
-    }
-
+    optim = c(TRUE, optimize_values, optimize_values, max_loss_frac > 0 & optimize_values)
     lower = c(0, 0, .Machine$double.eps, 0)
     upper = c(1, 1-1e-3, max_vaf_bkgr, max_loss_frac)
     init = c(0, scales::squish(sample_purity, 0, 1-1e-3), vaf_bkgr_sample, loss_frac)
+    optimiser_results = .optimize_params(per_edge_data, init, lower, upper, optim)
 
-    .f_optim = function(e, p) {
-      args = init; args[optim] = p
-      do.call(.ll_path, c(list(e), as.list(args)))
-    }
-
-    # initial values
-    edges = names(edge_to_node)
-    per_edge_ll_max = magrittr::set_names(rep(NA, length(edges)), edges)
-    per_edge_ll_opt_params = list()
-    params = magrittr::set_names(init, c("pos","purity","bkg","loss"))
-    max_ll = -Inf
-    edge_opt = NA
-
-    for (e in names(edge_to_node)) {
-
-      optim[1] = sum(per_edge_data[[e]]$n) > 0
-
-      opt_new = optim(
-        par = init[optim],
-        function(p) -1 * .f_optim(e, p),
-        lower = lower[optim],
-        upper = upper[optim],
-        method = "L-BFGS-B",
-        control = c(list(ndeps=rep(1e-6, sum(optim))), control)
-      )
-
-      if (opt_new$convergence != 0){
-        stop(opt_new$message)
-      }
-
-      per_edge_ll_max[e] = -opt_new$value
-      per_edge_ll_opt_params[[e]] = params
-      per_edge_ll_opt_params[[e]][optim] = opt_new$par
-
-      if (-opt_new$value > max_ll) {
-        edge_opt = e
-        max_ll = -opt_new$value
-        params[optim] = opt_new$par
-      }
+    if (n_bootstraps) {
+      cat("Bootstrapping data", n_bootstraps, "times...\n")
+      width = options()$width
+      tryCatch({
+        options(width=60)
+        bootstrap_results[[sample]] =
+          pbmcapply::pbmclapply(seq_len(n_bootstraps), function(i){
+            .bootstrap(per_edge_data, init, lower, upper, optim)
+          }, mc.cores = n_cores) %>% do.call(what=rbind)
+      }, finally = {
+        options(width=width)
+      })
+    } else {
+      bootstrap_results[sample] = list(NULL)
     }
 
     if (return_details) {
-      per_edge_max_ll_data[[sample]] = per_edge_ll_max
-      mll[sample] = max_ll
-      edges_samples[sample] = edge_opt
-      pi_samples[sample] = params["pos"]
+      per_edge_max_ll_data[[sample]] = optimiser_results$per_edge_max_ll
+      mll[sample] = optimiser_results$max_ll
+      edges_samples[sample] = optimiser_results$edge_opt
+      pi_samples[sample] = optimiser_results$params["pos"]
     }
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -334,26 +385,30 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     if (optimize_values) {
 
       orig_mll = .ll_path(
-        edge = edge_opt,
-        pi_m = params["pos"],
+        per_edge_data,
+        edge = optimiser_results$edge_opt,
+        pi_m = optimiser_results$params["pos"],
         purity = sample_purity,
         bkg_rate = vaf_bkgr_sample,
         loss_frac = loss_frac
       )
 
-      cat("\n")
-      cat("New values:\n")
-      cat("\n")
-      cat("- Background rate:", vaf_bkgr_sample, "->", params["bkg"], "\n")
-      cat("- Purity:", sample_purity, "->", params["purity"], "\n")
-      if (max_loss_frac)
-        cat("- Loss fraction:", loss_frac, "->", params["loss"], "\n")
-      cat("- MLL:", orig_mll, "->", max_ll, "\n")
-      cat("\n")
+      with(optimiser_results,{
+        cat("\n")
+        cat("New values:\n")
+        cat("\n")
+        cat("- Background rate:", vaf_bkgr_sample, "->", params["bkg"], "\n")
+        cat("- Purity:", sample_purity, "->", params["purity"], "\n")
+        if (max_loss_frac)
+          cat("- Loss fraction:", loss_frac, "->", params["loss"], "\n")
+        cat("- MLL:", orig_mll, "->", max_ll, "\n")
+        cat("\n")
+      })
 
-      vaf_optim[sample] = params["bkg"]
-      purity_optim[sample] = params["purity"]
-      loss_frac_optim[sample] = params["loss"]
+
+      vaf_optim[sample] = optimiser_results$params["bkg"]
+      purity_optim[sample] = optimiser_results$params["purity"]
+      loss_frac_optim[sample] = optimiser_results$params["loss"]
 
     } else {
       vaf_optim[sample] = NA
@@ -373,8 +428,16 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
       per_edge_ll =
         lapply(names(edge_to_node), function(edge) {
           sapply(vals_pi_per_edge, function(pi) {
-            params = per_edge_ll_opt_params[[edge]]
-            .ll_path(edge, pi, params["purity"], params["bkg"], params["loss"])
+            params = optimiser_results$per_edge_opt_params[[edge]]
+
+            .ll_path(
+                d = per_edge_data,
+                edge =  edge,
+                pi_m = pi,
+                purity = params["purity"],
+                bkg_rate = params["bkg"],
+                loss_frac = params["loss"]
+              )
           })
         })
 
@@ -384,15 +447,22 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     }
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    # Find best tree state ####
+    # Add sample to tree
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-    # normalize edge data and use as confidence value
-    log_sum_exp = exp(per_edge_ll_max - max_ll)
-    p_states = log_sum_exp / sum(log_sum_exp, na.rm=TRUE)
-    pi_opt = params["pos"]
+    pi_opt = optimiser_results$params["pos"]
+    edge_opt = optimiser_results$edge_opt
 
-    if (max(p_states, na.rm=TRUE) > min_confidence) {  # assign sample to tree if high confidence edge found.
+    if (n_bootstraps) {
+      max_lik_edge = mean(bootstrap_results[[sample]]$edge == edge_opt)
+    } else {
+      # normalize edge data and use as confidence value
+      log_sum_exp = with(optimiser_results, exp(per_edge_max_ll - max_ll))
+      lik_edge = log_sum_exp / sum(log_sum_exp, na.rm=TRUE)
+      max_lik_edge = max(lik_edge, na.rm=TRUE)
+    }
+
+    if (max_lik_edge > min_confidence) {  # assign sample to tree if high confidence edge found.
 
       tryCatch({
 
@@ -453,8 +523,8 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
 
         # store labels for later change
-        cat("=> Added sample (confidence: ", max(p_states, na.rm=TRUE), ")\n\n", sep="")
-        new_tip = paste0(sample, " (Added confidence: ", signif(max(p_states, na.rm=TRUE), 6), ")")
+        cat("=> Added sample (confidence: ", max_lik_edge, ")\n\n", sep="")
+        new_tip = paste0(sample, " (Added confidence: ", signif(max_lik_edge, 6), ")")
         added_tips[[sample]] = new_tip
 
       })#, error=function(e) {
@@ -495,7 +565,8 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         max_ll_per_edge = per_edge_max_ll_data,
         ll_per_edge = per_edge_ll_data,
         mutation_data = per_edge_mdata,
-        mutations_per_edge = mids_per_edge_gain
+        mutations_per_edge = mids_per_edge_gain,
+        bootstrap_results = bootstrap_results
       )
 
     return(results)

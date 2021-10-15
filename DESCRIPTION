@@ -25,7 +25,8 @@ Imports:
   tidytree,
   methods,
   readr,
-  abind
+  abind,
+  pbmcapply
 Suggests: 
     testthat,
     covr,

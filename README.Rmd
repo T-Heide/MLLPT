@@ -75,7 +75,9 @@ tree_with_lp_added =
       tree = tree, 
       phydata = phydata, 
       sample_data = samples, 
-      return_details = TRUE
+      return_details = TRUE, 
+      n_bootstraps = 1000, 
+      n_cores = 8
     )
   })
 ```
@@ -105,6 +107,13 @@ MLLPT::plot_lp_loglik(
 
 ```{r loglik_edge_plus_lp_example, fig.width = 10, fig.height = 2.5, out.width=850}
 MLLPT::plot_lp_loglik_edge(
+    tree_with_lp_added,
+    labeller_function = labeller_function
+  ) + ggplot2::theme(strip.text = ggplot2::element_text(size=9))
+```
+
+```{r edge_position_example, fig.width = 10, fig.height = 2.5, out.width=850}
+MLLPT::plot_lp_position_edge(
     tree_with_lp_added,
     labeller_function = labeller_function
   ) + ggplot2::theme(strip.text = ggplot2::element_text(size=9))
