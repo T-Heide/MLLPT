@@ -6,6 +6,7 @@
 #'
 #' @return A ggplot object
 #' @export
+#' @import ggplot2
 #'
 plot_lp_loglik =
   function(d, labeller_function=NULL, subset=NULL) {
@@ -63,6 +64,7 @@ plot_lp_loglik =
 #'
 #' @return A ggplot object
 #' @export
+#' @import ggplot2
 #'
 plot_lp_loglik_edge =
   function(d, labeller_function=NULL, subset=NULL) {
@@ -132,7 +134,7 @@ plot_lp_loglik_edge =
       edge_data_per_smp %>%
       dplyr::mutate(edge=factor(edge, names(edge_label), edge_label, ordered=TRUE)) %>%
       ggplot(aes(x=frac, y=p+1e-16, color=best)) +
-      theme_cowplot() +
+      cowplot::theme_cowplot() +
       geom_line() +
       facet_grid(sample_mod~edge, scales = "free_y") +
       xlab("Position on edge") +
@@ -156,6 +158,7 @@ plot_lp_loglik_edge =
 #'
 #' @return A ggplot object
 #' @export
+#' @import ggplot2
 #'
 plot_sample_data =
   function(d, labeller_function=function(x) return(x), external_purity_estimate=NULL, label_external_purity="Independent estimate", subset=NULL) {
@@ -202,7 +205,7 @@ plot_sample_data =
     plot_purity =
       per_sample_results %>%
       ggplot(aes(x=sample, y=purity)) +
-      theme_cowplot() +
+      cowplot::theme_cowplot() +
       geom_segment(aes(xend=sample, yend=initial_purity), linetype=3) +
       geom_point(size=2) +
       geom_point(aes(shape="Initial value", color="Initial value", y=initial_purity), size=2) +
@@ -227,7 +230,7 @@ plot_sample_data =
     plot_loss_frac =
       per_sample_results %>%
       ggplot(aes(x=sample, y=loss_frac)) +
-      theme_cowplot() +
+      cowplot::theme_cowplot() +
       geom_point(size=2) +
       coord_flip() +
       labs(color="", shape="") +
@@ -248,7 +251,7 @@ plot_sample_data =
       dplyr::mutate(sample=factor(L1, levels(per_sample_results$sample), ordered=TRUE)) %>%
       dplyr::filter(!is.na(sample)) %>%
       ggplot(aes(x=sample, y=value)) +
-      theme_cowplot() +
+      cowplot::theme_cowplot() +
       geom_point() +
       ylim(0, NA) +
       coord_flip() +
@@ -300,6 +303,7 @@ plot_sample_data =
 #'
 #' @return ggplot object
 #' @export
+#' @import ggplot2
 #'
 #' @examples plot_tree(ape::rtree(5))
 plot_tree = function(tree, HI=NULL, color_by=NULL, linewidth=1, pointsize=1, textsize=2.5, labeller_function=NULL) {
@@ -425,4 +429,5 @@ set_lp_tiplength = function(x, frac_height=0.01) {
 
   return(x)
 }
+
 

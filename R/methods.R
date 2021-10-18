@@ -17,7 +17,7 @@
 #' @param ...  unused arguments.
 #' @return A tree object with the samples in 'sample_data' added to it.
 #' @export
-#'
+#' @import treeman
 add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf_bkgr=0.01, purity_estimates=rep(1, length(sample_data)), min_edge_length=0, return_details=FALSE, optimize_values=TRUE, max_vaf_bkgr=0.1, max_loss_frac = 0, loss_frac_init = 0, rescale_tree=TRUE, control=NULL, ...) {
 
   if (packageVersion("treeman") < '1.1.5'){
