@@ -86,9 +86,11 @@ tree_with_lp_added =
 ```{r tree_plus_lp_example, fig.width=2.5, fig.height=2, out.width=350}
 labeller_function = function(x) gsub("EPICC_C[0-9]+_", "", x)
 
-MLLPT::plot_tree(
-    tree_with_lp_added,
-    labeller_function = labeller_function,
+tree_with_lp_added$tree %>% 
+  MLLPT:::remove_root_tip("GL") %>%  
+  MLLPT::set_lp_tiplength(0.05) %>% 
+  MLLPT::plot_tree(
+    labeller_function = labeller_function, 
     pointsize = 2, 
     linewidth = 0.8
   )

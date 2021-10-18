@@ -114,9 +114,9 @@ tree_with_lp_added =
     ## 
     ## New values:
     ## 
-    ## - Background rate: 0.01 -> 1e-12 
+    ## - Background rate: 0.01 -> 2.220446e-16 
     ## - Purity: 1 -> 0.8314804 
-    ## - MLL: -349.4508 -> -192.6926 
+    ## - MLL: -349.4509 -> -192.6926 
     ## 
     ## => Added sample (confidence: 1)
     ## 
@@ -127,9 +127,9 @@ tree_with_lp_added =
     ## 
     ## New values:
     ## 
-    ## - Background rate: 0.01 -> 0.0001978774 
-    ## - Purity: 1 -> 0.5211233 
-    ## - MLL: -911.8315 -> -727.613 
+    ## - Background rate: 0.01 -> 0.0001978821 
+    ## - Purity: 1 -> 0.5211217 
+    ## - MLL: -911.832 -> -727.613 
     ## 
     ## => Added sample (confidence: 1)
     ## 
@@ -140,9 +140,11 @@ tree_with_lp_added =
 ``` r
 labeller_function = function(x) gsub("EPICC_C[0-9]+_", "", x)
 
-MLLPT::plot_tree(
-    tree_with_lp_added,
-    labeller_function = labeller_function,
+tree_with_lp_added$tree %>% 
+  MLLPT:::remove_root_tip("GL") %>%  
+  MLLPT::set_lp_tiplength(0.05) %>% 
+  MLLPT::plot_tree(
+    labeller_function = labeller_function, 
     pointsize = 2, 
     linewidth = 0.8
   )
