@@ -378,3 +378,25 @@ remove_root_tip = function(tree, out) {
 
   tidytree::as.phylo(data)
 }
+
+
+#' Scale edge length of added LP samples for plotting
+#'
+#' @param x A phylo object.
+#' @param frac_height The edge length relative to the tree height.
+#'
+#' @return A phylo object.
+#' @export
+#'
+set_lp_tiplength = function(x, frac_height=0.01) {
+
+  checkmate::assertClass(x, "phylo")
+  checkmate::assertNumber(frac_height, lower = 0, upper = 1)
+
+  wh_added = grep("Added", x$tip.label)
+  idx_added = x$edge[,2] %in% wh_added
+  x$edge.length[idx_added] = max(ape::node.depth.edgelength(x)) * frac_height
+
+  return(x)
+}
+
