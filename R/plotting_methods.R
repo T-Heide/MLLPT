@@ -307,7 +307,8 @@ plot_tree = function(tree, HI=NULL, color_by=NULL, linewidth=1, pointsize=1, tex
   if ("tree" %in% names(tree)) tree = tree$tree
   checkmate::assertClass(tree, "phylo", null.ok = FALSE)
   checkmate::assertNumber(HI, null.ok = TRUE)
-  checkmate::assertCharacter(color_by, names = TRUE, null.ok = TRUE)
+  if (is.factor(color_by)) checkmate::assertFactor(color_by, names = "named", null.ok = TRUE)
+    else checkmate::assertCharacter(color_by, names = "named", null.ok = TRUE)
   checkmate::assertNumber(linewidth, null.ok = FALSE, na.ok = FALSE, lower = 0, finite = TRUE)
   checkmate::assertNumber(pointsize, null.ok = FALSE, na.ok = FALSE, lower = 0, finite = TRUE)
   checkmate::assertNumber(textsize, null.ok = FALSE, na.ok = FALSE, lower = 0, finite = TRUE)
@@ -324,22 +325,43 @@ plot_tree = function(tree, HI=NULL, color_by=NULL, linewidth=1, pointsize=1, tex
   tree$tip.label = unlist(tree$tip.label)
   added_node = grepl("Added", tree$tip.label)
   #tree$tip.label = gsub(" [(]Added.*[)]", " ", tree$tip.label)
-  shape_lookup = if_else(added_node, "A", "U") %>% magrittr::set_names(tree$tip.label)
-  new_label = gsub(" [(]Added.*", " *", labeller_function(tree$tip.label))  %>% magrittr::set_names(tree$tip.label)
+  shape_lookup = ifelse(added_node, "A", "U") %>% magrittr::set_names(tree$tip.label)
+  new_label = gsub(" [(]Added.*", " *", labeller_function(tree$tip.label)) %>% magrittr::set_names(tree$tip.label)
+  new_label_base = gsub(" [(]Added.*", "", tree$tip.label) %>% magrittr::set_names(tree$tip.label)
 
   if (is.null(color_by)) {
-    color_by = rep("gray10", length(tree$tip.label)) %>% magrittr::set_names(tree$tip.label)
+    ids = unique(new_label_base[tree$tip.label])
+    color_by = magrittr::set_names(rep("gray10", length(ids)), ids)
     color_scale = scale_color_identity()
   } else {
-    color_scale = scale_color_brewer(palette = "Set1")
+    color_scale = scale_color_brewer(palette = "Set1", drop=FALSE)
   }
 
   plt =
     tree %>%
     ggtree::ggtree(layout="rectangular", color="gray10", size=linewidth) +
-    ggtree::geom_tiplab(aes(label=new_label[label], color=color_by[label]), size=textsize, hjust=-0.25) +
-    ggtree::geom_tippoint(aes(shape=shape_lookup[label], color=color_by[label]), size=pointsize) +
-    ggtree::geom_treescale(y=-1, x=0, fontsize=textsize, linesize=linewidth, offset = 0.9) +
+    ggtree::geom_tiplab(
+      aes(
+        label=new_label[label],
+        color=color_by[new_label_base[label]]
+      ),
+      size=textsize,
+      hjust=-0.25
+    ) +
+    ggtree::geom_tippoint(
+      aes(
+        shape=shape_lookup[label],
+        color=color_by[new_label_base[label]]
+      ),
+      size=pointsize
+    ) +
+    ggtree::geom_treescale(
+      y=-1,
+      x=0,
+      fontsize=textsize,
+      linesize=linewidth,
+      offset = 0.9
+    ) +
     scale_shape_manual(breaks=c("U","A"), values=c(U=16, A=8)) +
     labs(color="") +
     guides(shape="none") +
@@ -349,6 +371,10 @@ plot_tree = function(tree, HI=NULL, color_by=NULL, linewidth=1, pointsize=1, tex
     theme(panel.background = element_rect(fill="transparent", colour = NA)) +
     theme(plot.background = element_rect(fill="transparent", colour = NA)) +
     color_scale
+
+  if (!is.null(HI)) {
+    plt = plt + labs(caption = paste0("HI = ", round(hi, 2)))
+  }
 
   plt = plt + xlim(0, 1.6 * max(plt$data$x))
 
