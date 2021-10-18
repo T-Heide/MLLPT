@@ -191,9 +191,12 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     if (max_loss_frac) loss_frac = loss_frac_init else loss_frac = 0
 
     # skip in some cases
-    if (sample %in% tree$tip.label) next()
     if (is.na(sample_purity)) next()
     if (NROW(data) == 0) next()
+    if (sample %in% tree$tip.label) {
+      n_dup = sum(c(tree$tip.label, added_tips)==sample)+1
+      sample = paste0(sample, paste0(rep("_", n_dup), collapse = ""))
+    }
 
     # mutation data of each edge
     per_edge_data = lapply(mids_per_edge_gain, get_data, data=data)
@@ -271,8 +274,8 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
       optim = c(TRUE, FALSE, FALSE, FALSE)
     }
 
-    lower = c(0, 0, 1e-12, 0)
-    upper = c(1, 1, max_vaf_bkgr, max_loss_frac)
+    lower = c(0, 0, .Machine$double.eps, 0)
+    upper = c(1, 1-.Machine$double.eps, max_vaf_bkgr, max_loss_frac)
     init = c(0, sample_purity, vaf_bkgr_sample, loss_frac)
 
     .f_optim = function(e, p) {
