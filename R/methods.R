@@ -420,7 +420,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         while (!correct_nsid) {
 
           tree_age_cur = treeman::getAge(tree_tm)
-          stopifnot(tree_age_cur == tree_age_o)
+          stopifnot(all.equal(tree_age_cur, tree_age_o))
           age_nsid = treeman::getSpnsAge(tree_tm, nsid, tree_age_cur)
 
           correct_nsid = (pos_add >= age_nsid[["end"]] |
