@@ -5,14 +5,21 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maximum likelihood assignment of low-pass samples to trees • MLLPT</title>
+<title>Maximum Likelihood Assignment of Low-Pass Samples to Trees • MLLPT</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Maximum likelihood assignment of low-pass samples to trees">
+<script src="pkgdown.js"></script><meta property="og:title" content="Maximum Likelihood Assignment of Low-Pass Samples to Trees">
 <meta property="og:description" content="Maximum likelihood assignment of low-pass samples.">
+<meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -88,48 +95,55 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">MLLPT</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/KlausVigo/phangorn">phangorn</a></span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">## Loading required package: ape</span></span></code></pre></div>
 <div id="1-input-data" class="section level5">
 <h5 class="hasAnchor">
 <a href="#1-input-data" class="anchor"></a>1) Input data</h5>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"example_lp_data"</span>, package<span class="op">=</span><span class="st">"MLLPT"</span><span class="op">)</span> <span class="co"># example dataset included in the package</span>
-
-<span class="co"># 1/3 a phylogenetic tree</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">tree</span><span class="op">)</span></code></pre></div>
-<pre class="text"><code>Phylogenetic tree with 7 tips and 6 internal nodes.
-
-Tip labels:
-    EPICC_C518_A1_G4_D1, EPICC_C518_A1_G6_D1, EPICC_C518_B1_G6_D1, EPICC_C518_B1_G8_D1, EPICC_C518_D1_G6_D1, GL, ...
-
-Rooted; includes branch lengths.</code></pre>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"example_lp_data"</span>, package<span class="op">=</span><span class="st">"MLLPT"</span><span class="op">)</span> <span class="co"># example dataset included in the package</span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># 1/3 a phylogenetic tree</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">tree</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">## </span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="co">## Phylogenetic tree with 7 tips and 6 internal nodes.</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co">## </span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">## Tip labels:</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">##   EPICC_C518_A1_G4_D1, EPICC_C518_A1_G6_D1, EPICC_C518_B1_G6_D1, EPICC_C518_B1_G8_D1, EPICC_C518_D1_G6_D1, GL, ...</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">## </span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">## Rooted; includes branch lengths.</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># 2/3 a phylo object (with id attribute)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">phydata</span><span class="op">)</span></code></pre></div>
-<pre class="text"><code>7 sequences with 7152 character and 19 different site patterns.
-The states are 0 1 </code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">phydata</span>, <span class="st">"id"</span><span class="op">)</span><span class="op">)</span> <span class="co"># a non default attribute of mutation ids!</span></code></pre></div>
-<pre class="text"><code>[1] "1X0" "1X1" "1X2" "1X3" "1X4" "1X5"</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">## 7 sequences with 7152 character and 19 different site patterns.</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co">## The states are 0 1</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">phydata</span>, <span class="st">"id"</span><span class="op">)</span><span class="op">)</span> <span class="co"># a non default attribute of mutation ids!</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">## [1] "1X0" "1X1" "1X2" "1X3" "1X4" "1X5"</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># 3/3 a list of sample data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">samples</span><span class="op">)</span></code></pre></div>
-<pre class="text"><code>List of 2
-  ..$ EPICC_C518_C1_G1_L1:'data.frame': 40452 obs. of  5 variables:
-  .. ..$ alt_count : num [1:40452] 0 0 0 0 0 0 0 1 1 0 ...
-  .. ..$ depth     : num [1:40452] 0 1 0 1 1 1 1 2 2 0 ...
-  .. ..$ id        : chr [1:40452] "1X0" "1X1" "1X2" "1X3" ...
-  .. ..$ cn_total  : num [1:40452] 2 2 2 2 2 2 2 2 2 2 ...
-  .. ..$ cn_mutated: num [1:40452] 1 1 1 1 1 1 1 1 1 1 ...
-  ..$ EPICC_C518_D1_G1_L1:'data.frame': 36212 obs. of  4 variables:
-  .. ..$ alt_count: num [1:36212] 0 1 0 1 0 0 0 1 0 1 ...
-  .. ..$ depth    : num [1:36212] 0 1 1 1 3 0 0 2 1 4 ...
-  .. ..$ id       : chr [1:36212] "1X0" "1X1" "1X2" "1X3" ...
-  .. ..$ cn_total : num [1:36212] 2 2 2 2 2 2 2 2 2 2 ...</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">## List of 2</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="co">##  $ EPICC_C518_C1_G1_L1:'data.frame': 40452 obs. of  7 variables:</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="co">##   ..$ clone    : num [1:40452] 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="co">##   ..$ alt_count: num [1:40452] 0 0 0 0 0 0 0 1 1 0 ...</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="co">##   ..$ depth    : num [1:40452] 0 1 0 1 1 1 1 2 2 0 ...</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="co">##   ..$ id       : chr [1:40452] "1X0" "1X1" "1X2" "1X3" ...</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co">##   ..$ ccf      : num [1:40452] 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="co">##   ..$ vaf      : num [1:40452] NaN 0 NaN 0 0 0 0 0.5 0.5 NaN ...</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="co">##   ..$ cn_total : num [1:40452] 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="co">##  $ EPICC_C518_D1_G1_L1:'data.frame': 36212 obs. of  7 variables:</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="co">##   ..$ clone    : num [1:36212] 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="co">##   ..$ alt_count: num [1:36212] 0 1 0 1 0 0 0 1 0 1 ...</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="co">##   ..$ depth    : num [1:36212] 0 1 1 1 3 0 0 2 1 4 ...</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a><span class="co">##   ..$ id       : chr [1:36212] "1X0" "1X1" "1X2" "1X3" ...</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="co">##   ..$ ccf      : num [1:36212] 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a><span class="co">##   ..$ vaf      : num [1:36212] NaN 1 0 1 0 NaN NaN 0.5 0 0.25 ...</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a><span class="co">##   ..$ cn_total : num [1:36212] 2 2 2 2 2 2 2 2 2 2 ...</span></span></code></pre></div>
 </div>
 <div id="2-add-lp-samples" class="section level5">
 <h5 class="hasAnchor">
 <a href="#2-add-lp-samples" class="anchor"></a>2) Add LP samples</h5>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tree_with_lp_added</span> <span class="op">=</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">example_lp_data</span>,  <span class="op">{</span>
     <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/add_lowpass_sampled.html">add_lowpass_sampled</a></span><span class="op">(</span>
@@ -139,53 +153,72 @@ The states are 0 1 </code></pre>
       return_details <span class="op">=</span> <span class="cn">TRUE</span>
     <span class="op">)</span>
   <span class="op">}</span><span class="op">)</span></code></pre></div>
-<pre class="text"><code>-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=
-
-Processing sample: EPICC_C518_C1_G1_L1 (1/2)
-
-
-New values:
-
-- Background rate: 0.01 -&gt; 0 
-- Purity: 1 -&gt; 0.8313362 
-- MLL: -349.1069 -&gt; -192.6928 
-
-=&gt; Added sample (confidence: 1)
-
--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=
-
-Processing sample: EPICC_C518_D1_G1_L1 (2/2)
-
-
-New values:
-
-- Background rate: 0.01 -&gt; 0.0007121943 
-- Purity: 1 -&gt; 0.6490007 
-- MLL: -886.1944 -&gt; -733.76 
-
-=&gt; Added sample (confidence: 1)
-
--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="co">## </span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="co">## Processing sample: EPICC_C518_C1_G1_L1 (1/2)</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="co">## </span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="co">## </span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co">## New values:</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co">## </span></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="co">## - Background rate: 0.01 -&gt; 2.220446e-16 </span></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="co">## - Purity: 1 -&gt; 0.8314804 </span></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="co">## - MLL: -349.4509 -&gt; -192.6926 </span></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="co">## </span></span>
+<span id="cb14-12"><a href="#cb14-12"></a><span class="co">## =&gt; Added sample (confidence: 1)</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="co">## </span></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="co">## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</span></span>
+<span id="cb14-15"><a href="#cb14-15"></a><span class="co">## </span></span>
+<span id="cb14-16"><a href="#cb14-16"></a><span class="co">## Processing sample: EPICC_C518_D1_G1_L1 (2/2)</span></span>
+<span id="cb14-17"><a href="#cb14-17"></a><span class="co">## </span></span>
+<span id="cb14-18"><a href="#cb14-18"></a><span class="co">## </span></span>
+<span id="cb14-19"><a href="#cb14-19"></a><span class="co">## New values:</span></span>
+<span id="cb14-20"><a href="#cb14-20"></a><span class="co">## </span></span>
+<span id="cb14-21"><a href="#cb14-21"></a><span class="co">## - Background rate: 0.01 -&gt; 0.0001978821 </span></span>
+<span id="cb14-22"><a href="#cb14-22"></a><span class="co">## - Purity: 1 -&gt; 0.5211217 </span></span>
+<span id="cb14-23"><a href="#cb14-23"></a><span class="co">## - MLL: -911.832 -&gt; -727.613 </span></span>
+<span id="cb14-24"><a href="#cb14-24"></a><span class="co">## </span></span>
+<span id="cb14-25"><a href="#cb14-25"></a><span class="co">## =&gt; Added sample (confidence: 1)</span></span>
+<span id="cb14-26"><a href="#cb14-26"></a><span class="co">## </span></span>
+<span id="cb14-27"><a href="#cb14-27"></a><span class="co">## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</span></span></code></pre></div>
 </div>
 <div id="3-plots" class="section level5">
 <h5 class="hasAnchor">
 <a href="#3-plots" class="anchor"></a>3) Plots</h5>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_tree.html">plot_tree</a></span><span class="op">(</span><span class="va">tree_with_lp_added</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/tree_plus_lp_example.png?raw=true" width="350"></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik.html">plot_lp_loglik</a></span><span class="op">(</span><span class="va">tree_with_lp_added</span><span class="op">)</span> <span class="op">+</span> <span class="fu">coord_flip</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/loglik_plus_lp_example.png?raw=true" width="200"></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik_edge.html">plot_lp_loglik_edge</a></span><span class="op">(</span><span class="va">tree_with_lp_added</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/loglik_edge_plus_lp_example.png?raw=true" width="850"></p>
+<code class="sourceCode R"><span class="va">labeller_function</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"EPICC_C[0-9]+_"</span>, <span class="st">""</span>, <span class="va">x</span><span class="op">)</span>
+
+<span class="va">tree_with_lp_added</span><span class="op">$</span><span class="va">tree</span> <span class="op">%&gt;%</span> 
+  <span class="fu">MLLPT</span><span class="fu">:::</span><span class="fu"><a href="reference/remove_root_tip.html">remove_root_tip</a></span><span class="op">(</span><span class="st">"GL"</span><span class="op">)</span> <span class="op">%&gt;%</span>  
+  <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/set_lp_tiplength.html">set_lp_tiplength</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_tree.html">plot_tree</a></span><span class="op">(</span>
+    labeller_function <span class="op">=</span> <span class="va">labeller_function</span>, 
+    pointsize <span class="op">=</span> <span class="fl">2</span>, 
+    linewidth <span class="op">=</span> <span class="fl">0.8</span>
+  <span class="op">)</span></code></pre></div>
+<p><img src="README_files/figure-gfm/tree_plus_lp_example-1.png" width="350"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik.html">plot_lp_loglik</a></span><span class="op">(</span>
+    <span class="va">tree_with_lp_added</span>,
+    labeller_function <span class="op">=</span> <span class="va">labeller_function</span>
+  <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>angle<span class="op">=</span><span class="fl">90</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="co">## Warning: Removed 20 rows containing missing values (geom_point).</span></span></code></pre></div>
+<p><img src="README_files/figure-gfm/loglik_plus_lp_example-1.png" width="200"></p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik_edge.html">plot_lp_loglik_edge</a></span><span class="op">(</span>
+    <span class="va">tree_with_lp_added</span>,
+    labeller_function <span class="op">=</span> <span class="va">labeller_function</span>
+  <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="README_files/figure-gfm/loglik_edge_plus_lp_example-1.png" width="850"></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_sample_data.html">plot_sample_data</a></span><span class="op">(</span>
-  <span class="va">tree_with_lp_added</span>, 
-  external_purity_estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.90</span>, <span class="fl">0.48</span><span class="op">)</span>, 
-  label_external_purity <span class="op">=</span> <span class="st">"GT"</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/sample_data_lp_example.png?raw=true" width="450"></p>
+    <span class="va">tree_with_lp_added</span>,
+    external_purity_estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.90</span>, <span class="fl">0.48</span><span class="op">)</span>,
+    label_external_purity <span class="op">=</span> <span class="st">"GT"</span>,
+    labeller_function <span class="op">=</span> <span class="va">labeller_function</span>
+  <span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co">## Scale for 'y' is already present. Adding another scale for 'y', which will</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="co">## replace the existing scale.</span></span></code></pre></div>
+<p><img src="README_files/figure-gfm/sample_data_lp_example-1.png" width="450"></p>
 <hr>
 </div>
 </div>
@@ -216,7 +249,7 @@ New values:
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>The package maintainer <br><small class="roles"> Maintainer </small>  </li>
+<li>Timon Heide <br><small class="roles"> Maintainer </small>  </li>
 </ul>
 </div>
 
@@ -232,7 +265,7 @@ New values:
 
 
       <footer><div class="copyright">
-  <p>Developed by The package maintainer.</p>
+  <p>Developed by Timon Heide.</p>
 </div>
 
 <div class="pkgdown">

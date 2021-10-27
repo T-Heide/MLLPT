@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot showing log-likelihood of fraction mutated from most likely edge. — plot_lp_loglik_edge • MLLPT</title>
+<title>Scale edge length of added LP samples for plotting — set_lp_tiplength • MLLPT</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Plot showing log-likelihood of fraction mutated from most likely edge. — plot_lp_loglik_edge" />
-<meta property="og:description" content="Plot showing log-likelihood of fraction mutated from most likely edge." />
+<meta property="og:title" content="Scale edge length of added LP samples for plotting — set_lp_tiplength" />
+<meta property="og:description" content="Scale edge length of added LP samples for plotting" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -111,37 +111,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot showing log-likelihood of fraction mutated from most likely edge.</h1>
+    <h1>Scale edge length of added LP samples for plotting</h1>
     
-    <div class="hidden name"><code>plot_lp_loglik_edge.Rd</code></div>
+    <div class="hidden name"><code>set_lp_tiplength.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot showing log-likelihood of fraction mutated from most likely edge.</p>
+    <p>Scale edge length of added LP samples for plotting</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plot_lp_loglik_edge</span><span class='op'>(</span><span class='va'>d</span>, labeller_function <span class='op'>=</span> <span class='cn'>NULL</span>, subset <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>set_lp_tiplength</span><span class='op'>(</span><span class='va'>x</span>, frac_height <span class='op'>=</span> <span class='fl'>0.01</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>d</th>
-      <td><p>Object returned from 'add_lowpass_sampled'.</p></td>
+      <th>x</th>
+      <td><p>A phylo object.</p></td>
     </tr>
     <tr>
-      <th>labeller_function</th>
-      <td><p>(optional) function returning a modified version of sample labels.</p></td>
-    </tr>
-    <tr>
-      <th>subset</th>
-      <td><p>(optional) character vector defining a subset of samples to plot.</p></td>
+      <th>frac_height</th>
+      <td><p>The edge length relative to the tree height.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A ggplot object</p>
+    <p>A phylo object.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
