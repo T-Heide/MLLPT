@@ -27,7 +27,7 @@ get_phydat_from_genotyping = function(d, vaf_threshold=0.05) {
     lapply(d, function(x) x$vaf >= vaf_threshold) %>%
     do.call(what=cbind) %>%
     data.frame() %>%
-    mutate(GL=0) %>%
+    dplyr::mutate(GL=0) %>%
     t() %>% as.matrix() %>%
     phangorn::phyDat(type="USER", levels=c(0,1))
 
@@ -36,10 +36,15 @@ get_phydat_from_genotyping = function(d, vaf_threshold=0.05) {
   return(pyData)
 }
 
-parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 100, cna_data=cna_data, ...) {
+parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 100, cna_data=NULL, estimate_mm=TRUE, purity_estimates=NULL, ...) {
 
   checkmate::assertFileExists(files, "r")
   checkmate::assertNumber(cutoff_deep, lower = 0)
+  checkmate::assertNumber(vaf_threshold, lower = 0, upper=1)
+  checkmate::assertNumber(minit, lower = 0, finite = TRUE)
+  checkmate::assert_list(cna_data, names = "named")
+  checkmate::assertFlag(estimate_mm)
+  checkmate::assertNumeric(purity_estimates, lower = 0, upper=1, null.ok = TRUE)
 
   # load data and find deep and shallow sequencing data
   data = mapply(
@@ -54,13 +59,65 @@ parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 1
   for (i in seq_along(data)[-1])
     checkmate::assertTRUE(all(data[[i]]$id == ids))
 
+  # split into deep and shallow
+  coverage = sapply(data, function(x) mean(x$depth))
+  data_deep = data[coverage > cutoff_deep]
+  data_lp = data[coverage <= cutoff_deep]
 
   # identify regions with equal cn in all samples:
-  cn_matrix = do.call(cbind, lapply(data, "[[", "copy_number"))
-  all_equal = apply(cn_matrix, 1, function(x) all(x == x[1]))
-  wh_use = all_equal & between(cn_matrix[,1], 1, 4)
-  for (i in seq_along(data)) data[[i]] = data[[i]][all_equal,]
+  cn_matrix_deep = do.call(cbind, lapply(data_deep, "[[", "copy_number"))
+  all_equal = apply(cn_matrix_deep, 1, function(x) all(x == x[1]))
+  wh_use = all_equal & dplyr::between(cn_matrix_deep[,1], 1, 4)
+  for (i in seq_along(data_lp)) data_lp[[i]] = data_lp[[i]][wh_use,]
+  for (i in seq_along(data_deep)) data_deep[[i]] = data_deep[[i]][wh_use,]
+  cn_deep = cn_matrix_deep[wh_use,1]
 
+  if (!is.null(purity_estimates) & estimate_mm) {
+    # ML estimate of multiplicity
+    # assuming that all samples have same MM if CN is equal
+    x = do.call(cbind, lapply(data_deep, "[[", "alt_count"))
+    n = do.call(cbind, lapply(data_deep, "[[", "depth"))
+    cn = do.call(cbind, rep(list(cn_deep), length(data_deep)))
+    v = do.call(rbind, rep(list(purity_estimates[names(data_deep)]), NROW(x)))
+
+    wh_mask = x/n < vaf_threshold
+    x[wh_mask] = n[wh_mask] = 0
+
+    .lik = function(mm) {
+      p = (mm * v) / (2 * (1 - v) + v * cn)
+      p[mm > cn] = NA
+      dbinom(x, n, p, log = 1)
+    }
+
+    mm_lik = abind::abind(lapply(seq(1, max(cn)), .lik), along = 3)
+    mm_lik_m = apply(mm_lik, c(1,3), sum, na.rm=TRUE)
+    mm_lik_m[mm_lik_m == 0] = NA
+    mm = apply(mm_lik_m, 1, function(x) which(x==max(x, na.rm=TRUE))[1])
+
+    multiplicity_data = data.frame(
+      n_alt = apply(x, 1, sum),
+      depth = apply(n, 1, sum),
+      multiplicity = mm,
+      copy_number = cn[, 1]
+    )
+
+    for (i in seq_along(data_lp))
+      data_lp[[i]]$mm = mm
+
+  } else {
+    multiplicity_data = NULL
+  }
+
+  # Only keep LP samples with CN equal to main CN sate
+  for (i in seq_along(data_lp))
+    data_lp[[i]] = data_lp[[i]] %>%
+      dplyr::filter(copy_number == cn_deep & !is.na(mm))
+
+  for (i in seq_along(data_lp))
+    stopifnot(all(data_lp[[i]]$copy_number >= data_lp[[i]]$mm))
+
+
+  # print warning if very few sites are keeped
   frac_equal_cn = mean(wh_use)
   if (frac_equal_cn < 0.1) {
     paste0(
@@ -70,11 +127,6 @@ parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 1
     ) %>% warning()
   }
 
-  # split into deep and shallow
-  coverage = sapply(data, function(x) mean(x$depth))
-  data_deep = data[coverage > cutoff_deep]
-  data_lp = data[coverage <= cutoff_deep]
-
 
   # get tree and phyDat
   deep_tree_results =
@@ -83,7 +135,6 @@ parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 1
       vaf_threshold=vaf_threshold,
       minit=minit
     )
-
 
   if (inherits(deep_tree_results$tree, "multiPhylo")) {
     trees_deep = lapply(deep_tree_results$tree, function(x) x)
@@ -110,7 +161,8 @@ parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 1
     tree_lp = sapply(lp_tree_results, "[[", "tree"),
     tree_deep_results = deep_tree_results,
     tree_lp_results = lp_tree_results,
-    cn_matrix = cn_matrix,
-    frac_snvs_used = frac_equal_cn
+    cn_matrix = cn_matrix_deep,
+    frac_snvs_used = frac_equal_cn,
+    multiplicity_data = multiplicity_data
   ))
 }

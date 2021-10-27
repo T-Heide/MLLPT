@@ -275,8 +275,8 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     }
 
     lower = c(0, 0, .Machine$double.eps, 0)
-    upper = c(1, 1-.Machine$double.eps, max_vaf_bkgr, max_loss_frac)
-    init = c(0, sample_purity, vaf_bkgr_sample, loss_frac)
+    upper = c(1, 1-1e-3, max_vaf_bkgr, max_loss_frac)
+    init = c(0, scales::squish(sample_purity, 0, 1-1e-3), vaf_bkgr_sample, loss_frac)
 
     .f_optim = function(e, p) {
       args = init; args[optim] = p
