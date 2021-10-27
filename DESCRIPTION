@@ -24,7 +24,8 @@ Imports:
   checkmate,
   tidytree,
   methods,
-  readr
+  readr,
+  abind
 Suggests: 
     testthat,
     covr,
