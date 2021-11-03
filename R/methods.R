@@ -454,7 +454,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
         # store labels for later change
         cat("=> Added sample (confidence: ", max(p_states, na.rm=TRUE), ")\n\n", sep="")
-        new_tip = paste0(sample, " (Added p = ", signif(max(p_states, na.rm=TRUE), 6), ")")
+        new_tip = paste0(sample, " (Added confidence: ", signif(max(p_states, na.rm=TRUE), 6), ")")
         added_tips[[sample]] = new_tip
 
       })#, error=function(e) {
