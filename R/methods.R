@@ -115,6 +115,9 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   # General data for analysis
   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+  if (!is.null(names(purity_estimates)))
+    purity_estimates = as.numeric(purity_estimates[names(sample_data)])
+
   # get mutation ids for each node of the tree
   sample_data = lapply(sample_data, correct_mdata_structure)
   initial_values$sample_data = sample_data # more compact version of data

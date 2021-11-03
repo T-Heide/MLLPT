@@ -300,13 +300,14 @@ plot_sample_data =
 #' @param pointsize (optional)  numeric value defining point size of tree tips  (1).
 #' @param textsize (optional)  numeric value defining linewidth of tree edges (2.5).
 #' @param labeller_function (optional) HI of the tree (unused).
+#' @param keep_conf_label (optional) Flat indicating if `confidence label' should be keeped (default: FALSE).
 #'
 #' @return ggplot object
 #' @export
 #' @import ggplot2
 #'
 #' @examples plot_tree(ape::rtree(5))
-plot_tree = function(tree, HI=NULL, color_by=NULL, linewidth=1, pointsize=1, textsize=2.5, labeller_function=NULL) {
+plot_tree = function(tree, HI=NULL, color_by=NULL, linewidth=1, pointsize=1, textsize=2.5, labeller_function=NULL, keep_conf_label=FALSE) {
 
   if ("tree" %in% names(tree)) tree = tree$tree
   checkmate::assertClass(tree, "phylo", null.ok = FALSE)
@@ -330,7 +331,10 @@ plot_tree = function(tree, HI=NULL, color_by=NULL, linewidth=1, pointsize=1, tex
   added_node = grepl("Added", tree$tip.label)
   #tree$tip.label = gsub(" [(]Added.*[)]", " ", tree$tip.label)
   shape_lookup = ifelse(added_node, "A", "U") %>% magrittr::set_names(tree$tip.label)
-  new_label = gsub(" [(]Added.*", " *", labeller_function(tree$tip.label)) %>% magrittr::set_names(tree$tip.label)
+
+  rep_label = ifelse(keep_conf_label, " [(]Added", " [(]Added.*[*]")
+  rep_with= ifelse(keep_conf_label, ":", "")
+  new_label = gsub(rep_label, rep_with, gsub(")", " *", labeller_function(tree$tip.label))) %>% magrittr::set_names(tree$tip.label)
   new_label_base = gsub(" [(]Added.*", "", tree$tip.label) %>% magrittr::set_names(tree$tip.label)
 
   if (is.null(color_by)) {

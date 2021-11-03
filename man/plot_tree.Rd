@@ -11,7 +11,8 @@ plot_tree(
   linewidth = 1,
   pointsize = 1,
   textsize = 2.5,
-  labeller_function = NULL
+  labeller_function = NULL,
+  keep_conf_label = FALSE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ plot_tree(
 \item{textsize}{(optional)  numeric value defining linewidth of tree edges (2.5).}
 
 \item{labeller_function}{(optional) HI of the tree (unused).}
+
+\item{keep_conf_label}{(optional) Flat indicating if `confidence label' should be keeped (default: FALSE).}
 }
 \value{
 ggplot object
