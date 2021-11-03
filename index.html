@@ -187,9 +187,9 @@
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">labeller_function</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"EPICC_C[0-9]+_"</span>, <span class="st">""</span>, <span class="va">x</span><span class="op">)</span>
 
-<span class="va">tree_with_lp_added</span><span class="op">$</span><span class="va">tree</span> <span class="op">%&gt;%</span> 
-  <span class="fu">MLLPT</span><span class="fu">:::</span><span class="fu"><a href="reference/remove_root_tip.html">remove_root_tip</a></span><span class="op">(</span><span class="st">"GL"</span><span class="op">)</span> <span class="op">%&gt;%</span>  
-  <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/set_lp_tiplength.html">set_lp_tiplength</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+<span class="va">tree_with_lp_added</span><span class="op">$</span><span class="va">tree</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">MLLPT</span><span class="fu">:::</span><span class="fu"><a href="reference/remove_root_tip.html">remove_root_tip</a></span><span class="op">(</span><span class="st">"GL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>  
+  <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/set_lp_tiplength.html">set_lp_tiplength</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
   <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_tree.html">plot_tree</a></span><span class="op">(</span>
     labeller_function <span class="op">=</span> <span class="va">labeller_function</span>, 
     pointsize <span class="op">=</span> <span class="fl">2</span>, 
