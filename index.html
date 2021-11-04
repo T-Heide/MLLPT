@@ -150,36 +150,40 @@
       tree <span class="op">=</span> <span class="va">tree</span>, 
       phydata <span class="op">=</span> <span class="va">phydata</span>, 
       sample_data <span class="op">=</span> <span class="va">samples</span>, 
-      return_details <span class="op">=</span> <span class="cn">TRUE</span>
+      return_details <span class="op">=</span> <span class="cn">TRUE</span>, 
+      n_bootstraps <span class="op">=</span> <span class="fl">1000</span>, 
+      n_cores <span class="op">=</span> <span class="fl">8</span>
     <span class="op">)</span>
   <span class="op">}</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a><span class="co">## </span></span>
 <span id="cb14-3"><a href="#cb14-3"></a><span class="co">## Processing sample: EPICC_C518_C1_G1_L1 (1/2)</span></span>
 <span id="cb14-4"><a href="#cb14-4"></a><span class="co">## </span></span>
-<span id="cb14-5"><a href="#cb14-5"></a><span class="co">## </span></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="co">## New values:</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a><span class="co">## </span></span>
-<span id="cb14-8"><a href="#cb14-8"></a><span class="co">## - Background rate: 0.01 -&gt; 2.220446e-16 </span></span>
-<span id="cb14-9"><a href="#cb14-9"></a><span class="co">## - Purity: 1 -&gt; 0.8314804 </span></span>
-<span id="cb14-10"><a href="#cb14-10"></a><span class="co">## - MLL: -349.4509 -&gt; -192.6926 </span></span>
-<span id="cb14-11"><a href="#cb14-11"></a><span class="co">## </span></span>
-<span id="cb14-12"><a href="#cb14-12"></a><span class="co">## =&gt; Added sample (confidence: 1)</span></span>
-<span id="cb14-13"><a href="#cb14-13"></a><span class="co">## </span></span>
-<span id="cb14-14"><a href="#cb14-14"></a><span class="co">## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</span></span>
-<span id="cb14-15"><a href="#cb14-15"></a><span class="co">## </span></span>
-<span id="cb14-16"><a href="#cb14-16"></a><span class="co">## Processing sample: EPICC_C518_D1_G1_L1 (2/2)</span></span>
-<span id="cb14-17"><a href="#cb14-17"></a><span class="co">## </span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="co">## Bootstrapping data 1000 times...</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co">## </span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co">## New values:</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="co">## </span></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="co">## - Background rate: 0.01 -&gt; 2.220446e-16 </span></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="co">## - Purity: 1 -&gt; 0.8314804 </span></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="co">## - MLL: -349.4509 -&gt; -192.6926 </span></span>
+<span id="cb14-12"><a href="#cb14-12"></a><span class="co">## </span></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="co">## =&gt; Added sample (confidence: 1)</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="co">## </span></span>
+<span id="cb14-15"><a href="#cb14-15"></a><span class="co">## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</span></span>
+<span id="cb14-16"><a href="#cb14-16"></a><span class="co">## </span></span>
+<span id="cb14-17"><a href="#cb14-17"></a><span class="co">## Processing sample: EPICC_C518_D1_G1_L1 (2/2)</span></span>
 <span id="cb14-18"><a href="#cb14-18"></a><span class="co">## </span></span>
-<span id="cb14-19"><a href="#cb14-19"></a><span class="co">## New values:</span></span>
+<span id="cb14-19"><a href="#cb14-19"></a><span class="co">## Bootstrapping data 1000 times...</span></span>
 <span id="cb14-20"><a href="#cb14-20"></a><span class="co">## </span></span>
-<span id="cb14-21"><a href="#cb14-21"></a><span class="co">## - Background rate: 0.01 -&gt; 0.0001978821 </span></span>
-<span id="cb14-22"><a href="#cb14-22"></a><span class="co">## - Purity: 1 -&gt; 0.5211217 </span></span>
-<span id="cb14-23"><a href="#cb14-23"></a><span class="co">## - MLL: -911.832 -&gt; -727.613 </span></span>
-<span id="cb14-24"><a href="#cb14-24"></a><span class="co">## </span></span>
-<span id="cb14-25"><a href="#cb14-25"></a><span class="co">## =&gt; Added sample (confidence: 1)</span></span>
+<span id="cb14-21"><a href="#cb14-21"></a><span class="co">## New values:</span></span>
+<span id="cb14-22"><a href="#cb14-22"></a><span class="co">## </span></span>
+<span id="cb14-23"><a href="#cb14-23"></a><span class="co">## - Background rate: 0.01 -&gt; 0.0001978852 </span></span>
+<span id="cb14-24"><a href="#cb14-24"></a><span class="co">## - Purity: 1 -&gt; 0.5211199 </span></span>
+<span id="cb14-25"><a href="#cb14-25"></a><span class="co">## - MLL: -911.8326 -&gt; -727.613 </span></span>
 <span id="cb14-26"><a href="#cb14-26"></a><span class="co">## </span></span>
-<span id="cb14-27"><a href="#cb14-27"></a><span class="co">## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</span></span></code></pre></div>
+<span id="cb14-27"><a href="#cb14-27"></a><span class="co">## =&gt; Added sample (confidence: 0.997)</span></span>
+<span id="cb14-28"><a href="#cb14-28"></a><span class="co">## </span></span>
+<span id="cb14-29"><a href="#cb14-29"></a><span class="co">## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</span></span></code></pre></div>
 </div>
 <div id="3-plots" class="section level5">
 <h5 class="hasAnchor">
@@ -210,14 +214,20 @@
   <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="README_files/figure-gfm/loglik_edge_plus_lp_example-1.png" width="850"></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_position_edge.html">plot_lp_position_edge</a></span><span class="op">(</span>
+    <span class="va">tree_with_lp_added</span>,
+    labeller_function <span class="op">=</span> <span class="va">labeller_function</span>
+  <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="README_files/figure-gfm/edge_position_example-1.png" width="850"></p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_sample_data.html">plot_sample_data</a></span><span class="op">(</span>
     <span class="va">tree_with_lp_added</span>,
     external_purity_estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.90</span>, <span class="fl">0.48</span><span class="op">)</span>,
     label_external_purity <span class="op">=</span> <span class="st">"GT"</span>,
     labeller_function <span class="op">=</span> <span class="va">labeller_function</span>
   <span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co">## Scale for 'y' is already present. Adding another scale for 'y', which will</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="co">## replace the existing scale.</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="co">## Scale for 'y' is already present. Adding another scale for 'y', which will</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="co">## replace the existing scale.</span></span></code></pre></div>
 <p><img src="README_files/figure-gfm/sample_data_lp_example-1.png" width="450"></p>
 <hr>
 </div>
