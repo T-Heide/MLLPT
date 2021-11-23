@@ -113,7 +113,12 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   checkmate::reportAssertions(al)
 
   if (max_vaf_bkgr > 0.1)
-    warning(paste0("Do you really want to set a background rate of ", max_vaf_bkgr, "?\n"))
+    warning(
+      "Do you really want to set a background rate of ",
+      max_vaf_bkgr,
+      "?\n",
+      sep = ""
+    )
 
   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   # General data for analysis
@@ -135,24 +140,33 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
   lost_ids = unlist(lapply(mids_per_edge, "[[", "lost"))
   mids_per_edge_gain = lapply(lapply(mids_per_edge, "[[", "added"), function(x) x[!x %in% lost_ids])
-  if (rescale_tree) tree$edge.length = sapply(mids_per_edge_gain, length)  # rescale the tree?
+
+  if (rescale_tree) {
+    tree$edge.length =
+      vapply(
+        mids_per_edge_gain,
+        length,
+        integer(1),
+        USE.NAMES = FALSE
+      ) # rescale the tree?
+  }
 
   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   # Adding of samples to the tree
   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-  added_tips = c()
+  added_tips = logical()
   per_edge_max_ll_data = list()
   per_edge_ll_data = list()
   per_edge_mdata = list()
   tree$node.label = paste0("N", seq_len(tree$Nnode))
   tree_tm = as(tree, 'TreeMan') #
-  purity_optim = c()
-  vaf_optim = c()
-  loss_frac_optim = c()
-  mll = c()
-  edges_samples = c()
-  pi_samples = c()
+  purity_optim = numeric()
+  vaf_optim = numeric()
+  loss_frac_optim = numeric()
+  mll = numeric()
+  edges_samples = integer()
+  pi_samples = numeric()
   bootstrap_results = list()
 
   # get tree and species ages:
@@ -172,7 +186,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   names(node_to_edge) = edge_to_node
   node_to_edge = node_to_edge[order(as.numeric(names(node_to_edge)))]
 
-  anc_edge = sapply(names(edge_to_node), function(x) {
+  anc_edge = lapply(names(edge_to_node), function(x) {
     # map edge to all edges before it
     next_node = edge_to_node[as.character(x)]
     anc_nodes = phangorn::Ancestors(tree, next_node)
@@ -180,7 +194,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     na.omit(anc_edges)
   })
 
-  not_anc_edge = sapply(names(edge_to_node), function(x) {
+  not_anc_edge = lapply(names(edge_to_node), function(x) {
     names(edge_to_node)[!names(edge_to_node) %in% c(anc_edge[[x]], x)]
   })
 
@@ -189,7 +203,16 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   for (j in seq_along(sample_data)) {
 
     cat("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=\n\n")
-    cat("Processing sample: ", names(sample_data)[j], " (", j, "/", length(sample_data), ")\n\n", sep="")
+    cat(
+      "Processing sample: ",
+      names(sample_data)[j],
+      " (",
+      j,
+      "/",
+      length(sample_data),
+      ")\n\n",
+      sep = ""
+    )
 
     # current data
     sample = names(sample_data)[j]
@@ -239,9 +262,10 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
       #
       ll_mut =
-        sapply(
+        vapply(
           anc_edge[[edge]],
           .ll_edge,
+          numeric(1),
           d = d,
           pi_m = 1 - loss_frac,
           purity = purity,
@@ -249,9 +273,10 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         )
 
       ll_bkg =
-        sapply(
+        vapply(
           not_anc_edge[[edge]],
           .ll_edge,
+          numeric(1),
           d = d,
           pi_m = 0,
           purity = purity,
@@ -307,16 +332,16 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         }
 
         # store results of this edge
-        results$per_edge_max_ll[e] = -opt_new$value
+        results$per_edge_max_ll[e] = -opt_new[["value"]]
         results$per_edge_opt_params[[e]] = init
-        results$per_edge_opt_params[[e]][optim] = opt_new$par
+        results$per_edge_opt_params[[e]][optim] = opt_new[["par"]]
         names(results$per_edge_opt_params[[e]]) = c("pos","purity","bkg","loss")
 
         if (-opt_new$value > results$max_ll) {
           # if generally better then other update results
           results$edge_opt = e
-          results$max_ll = -opt_new$value
-          results$params[optim] = opt_new$par
+          results$max_ll = -opt_new[["value"]]
+          results$params[optim] = opt_new[["par"]]
         }
       }
 
@@ -326,12 +351,13 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     .bootstrap = function(d, ...) {
 
       # permutate data
-      i = as.numeric(unlist(sapply(d, function(x) seq_len(NROW(x)))))
-      e = rep(names(d), sapply(d, NROW))
+      i = as.numeric(unlist(lapply(d, function(x) seq_len(NROW(x)))))
+      e = rep(names(d), vapply(d, NROW, integer(1)))
+      n = as.numeric(unlist(lapply(d, "[", "weight")))
 
-      n = as.numeric(unlist(sapply(d, "[", "weight")))
       idx = sample(seq_along(i), sum(n), replace=TRUE, prob=n)
       n_dash = table(idx)[as.character(seq_along(i))]; n_dash[is.na(n_dash)] = 0
+      #n_dash = MCMCpack::rdirichlet(1, n) * sum(n)
       for (j in seq_along(i)) d[[e[j]]]$weight[i[j]] = n_dash[j]
 
       res = tryCatch({
@@ -359,15 +385,11 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
     if (n_bootstraps) {
       cat("Bootstrapping data", n_bootstraps, "times...\n")
-      width = options()$width
-      tryCatch({
-        options(width=60)
+      withr::with_options(list(width=60), {
         bootstrap_results[[sample]] =
           pbmcapply::pbmclapply(seq_len(n_bootstraps), function(i){
             .bootstrap(per_edge_data, init, lower, upper, optim)
           }, mc.cores = n_cores) %>% do.call(what=rbind)
-      }, finally = {
-        options(width=width)
       })
     } else {
       bootstrap_results[sample] = list(NULL)
@@ -427,7 +449,8 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
       per_edge_ll =
         lapply(names(edge_to_node), function(edge) {
-          sapply(vals_pi_per_edge, function(pi) {
+          vapply(vals_pi_per_edge, function(pi) {
+
             params = optimiser_results$per_edge_opt_params[[edge]]
 
             .ll_path(
@@ -438,7 +461,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
                 bkg_rate = params["bkg"],
                 loss_frac = params["loss"]
               )
-          })
+          }, numeric(1))
         })
 
       names(per_edge_ll) = names(edge_to_node)
@@ -679,7 +702,12 @@ load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
           if ("mm" %in% names(S4Vectors::elementMetadata(cn_data))) {
             chunk_data$mm = cn_data$mm[ol]
           } else {
-            warning(paste0("For file ", basename(file), ": mutation multiplicity data missing! Assuming mm = 1.\n"))
+            warning(
+              "For file ",
+              basename(file),
+              ": mutation multiplicity data missing! Assuming mm = 1.\n",
+              sep = ""
+            )
             chunk_data$mm[!is.na(chunk_data$copy_number)] = 1
           }
 
@@ -694,21 +722,30 @@ load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
           if ("mm" %in% colnames(cn_data)) {
             chunk_data$mm = cn_data$mm[mt]
           } else {
-            warning(paste0("For file ", basename(file), ": mutation multiplicity data missing! Assuming mm = 1.\n"))
+            warning(
+              "For file ",
+              basename(file),
+              ": mutation multiplicity data missing! Assuming mm = 1.\n",
+              sep = ""
+            )
             chunk_data$mm[!is.na(chunk_data$copy_number)] = 1
           }
         }
       }  else {
         # 3) No CN data
-
-        warning(paste0("For file ", basename(file), ": CN data missing, assuming CN 1+1.\n"))
+        warning(
+          "For file ",
+          basename(file),
+          ": CN data missing, assuming CN 1+1.\n",
+          sep = ""
+        )
         chunk_data$copy_number = 2
         chunk_data$mm = 1
       }
 
       parsed_data <<- rbind(parsed_data, chunk_data)
 
-      return(!all(x$source == "GL"))
+      return(!all(x[,"source"] == "GL"))
     }
 
   #---------------------------------------------
@@ -725,7 +762,12 @@ load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
      progress = FALSE
     )
   }, error=function(e) {
-    cat(paste0("Failed to load file '", basename(file), "'. Wrong file format?\n"))
+    cat(
+      "Failed to load file '",
+      basename(file),
+      "'. Wrong file format?\n",
+      sep = ""
+    )
     print(e)
     parsed_data <<- NULL
   })

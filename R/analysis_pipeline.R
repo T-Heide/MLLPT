@@ -47,11 +47,10 @@ parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 1
   checkmate::assertNumeric(purity_estimates, lower = 0, upper=1, null.ok = TRUE)
 
   # load data and find deep and shallow sequencing data
-  data = mapply(
+  data = Map(
     MLLPT::load_genotyping_file,
-    cn_data = magrittr::set_names(cna_data[names(files)], names(files)),
     file = as.list(files),
-    SIMPLIFY = FALSE
+    cn_data = magrittr::set_names(cna_data[names(files)], names(files))
   )
 
   # check that all ids are equal
@@ -60,7 +59,7 @@ parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 1
     checkmate::assertTRUE(all(data[[i]]$id == ids))
 
   # split into deep and shallow
-  coverage = sapply(data, function(x) mean(x$depth))
+  coverage = vapply(data, function(x) mean(x$depth), numeric(1))
   data_deep = data[coverage > cutoff_deep]
   data_lp = data[coverage <= cutoff_deep]
 
@@ -158,7 +157,7 @@ parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 1
 
   return(list(
     tree_deep = trees_deep,
-    tree_lp = sapply(lp_tree_results, "[[", "tree"),
+    tree_lp = lapply(lp_tree_results, "[[", "tree"),
     tree_deep_results = deep_tree_results,
     tree_lp_results = lp_tree_results,
     cn_matrix = cn_matrix_deep,
@@ -166,3 +165,12 @@ parse_data_files = function(files, cutoff_deep=10, vaf_threshold=0.05, minit = 1
     multiplicity_data = multiplicity_data
   ))
 }
+
+
+remove_clonal_variants_tree =
+  function(tree) {
+    root = phangorn::getRoot(ape::root.phylo(tree, "GL"))
+    wh_edge = tree$edge[,1] == root
+    tree$edge.length[wh_edge] = 0
+    return(tree)
+  }

@@ -21,9 +21,11 @@ plot_lp_loglik =
     if (d$inital_values$n_bootstraps) {
       d_edge =
         lapply(d$bootstrap_results, function(x) {
-          sapply(names(d$max_ll_per_edge[[1]]), function(y) {
-            log((sum(x$edge == y) + 1) / (length(x$edge)+1))
-          })
+          vapply(
+            names(d$max_ll_per_edge[[1]]),
+            function(y) {log((sum(x$edge == y) + 1) / (length(x$edge)+1))},
+            numeric(1)
+          )
         })
     } else {
       d_edge = d$max_ll_per_edge
@@ -191,7 +193,7 @@ plot_lp_position_edge =
     }
 
     data_ml = d$per_sample_result
-    data_bootstrap = reshape2::melt(d$bootstrap_results, measure.vars=c())
+    data_bootstrap = reshape2::melt(d$bootstrap_results, measure.vars=vector())
 
     if (!is.null(subset)) {
       data_bootstrap = data_bootstrap %>% filter(L1 %in% subset)

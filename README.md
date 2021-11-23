@@ -4,8 +4,7 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/T-Heide/MLLPT/workflows/R-CMD-check/badge.svg)](https://github.com/T-Heide/MLLPT/actions)
-[![Codecov test
-coverage](https://codecov.io/gh/T-Heide/MLLPT/branch/master/graph/badge.svg?token=1M0X8H2FRY)](https://codecov.io/gh/T-Heide/MLLPT?branch=master)
+[![codecov](https://codecov.io/gh/T-Heide/MLLPT/branch/master/graph/badge.svg?token=IAVSPV5QD2)](https://codecov.io/gh/T-Heide/MLLPT)[![CodeFactor](https://www.codefactor.io/repository/github/t-heide/mllpt/badge/master)](https://www.codefactor.io/repository/github/t-heide/mllpt/overview/master)
 <!-- badges: end -->
 
 Maximum likelihood assignment of low-pass samples (MLLPT)
@@ -118,8 +117,8 @@ tree_with_lp_added =
     ## New values:
     ## 
     ## - Background rate: 0.01 -> 2.220446e-16 
-    ## - Purity: 1 -> 0.8314804 
-    ## - MLL: -349.4509 -> -192.6926 
+    ## - Purity: 0.75 -> 0.8314805 
+    ## - MLL: -345.2188 -> -192.6926 
     ## 
     ## => Added sample (confidence: 1)
     ## 
@@ -131,11 +130,11 @@ tree_with_lp_added =
     ## 
     ## New values:
     ## 
-    ## - Background rate: 0.01 -> 0.0001978852 
-    ## - Purity: 1 -> 0.5211199 
-    ## - MLL: -911.8326 -> -727.613 
+    ## - Background rate: 0.01 -> 0.0001978822 
+    ## - Purity: 0.75 -> 0.5211209 
+    ## - MLL: -848.1092 -> -727.613 
     ## 
-    ## => Added sample (confidence: 0.997)
+    ## => Added sample (confidence: 0.990982)
     ## 
     ## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=
 

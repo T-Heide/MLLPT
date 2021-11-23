@@ -26,7 +26,8 @@ Imports:
   methods,
   readr,
   abind,
-  pbmcapply
+  pbmcapply,
+  withr
 Suggests: 
     testthat,
     covr,

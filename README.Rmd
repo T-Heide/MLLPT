@@ -9,7 +9,8 @@ knitr::opts_chunk$set(dpi=300)
 # MLLPT <img src='man/figures/logo.png' align="right" height="139" />
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/T-Heide/MLLPT/workflows/R-CMD-check/badge.svg)](https://github.com/T-Heide/MLLPT/actions)
-[![Codecov test coverage](https://codecov.io/gh/T-Heide/MLLPT/branch/master/graph/badge.svg?token=1M0X8H2FRY)](https://codecov.io/gh/T-Heide/MLLPT?branch=master)
+[![codecov](https://codecov.io/gh/T-Heide/MLLPT/branch/master/graph/badge.svg?token=IAVSPV5QD2)](https://codecov.io/gh/T-Heide/MLLPT)
+[![CodeFactor](https://www.codefactor.io/repository/github/t-heide/mllpt/badge/master)](https://www.codefactor.io/repository/github/t-heide/mllpt/overview/master)
 <!-- badges: end -->
 
 Maximum likelihood assignment of low-pass samples (MLLPT)
