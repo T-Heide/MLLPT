@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>MLE assignment of (low-depth) samples to a tree — add_lowpass_sampled • MLLPT</title>
+<title>Plot showing tree and CNA data site-by-site. — plot_tree_and_cn_data • MLLPT</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="MLE assignment of (low-depth) samples to a tree — add_lowpass_sampled" />
-<meta property="og:description" content="MLE assignment of (low-depth) samples to a tree" />
+<meta property="og:title" content="Plot showing tree and CNA data site-by-site. — plot_tree_and_cn_data" />
+<meta property="og:description" content="Plot showing tree and CNA data site-by-site." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -111,32 +111,22 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>MLE assignment of (low-depth) samples to a tree</h1>
+    <h1>Plot showing tree and CNA data site-by-site.</h1>
     
-    <div class="hidden name"><code>add_lowpass_sampled.Rd</code></div>
+    <div class="hidden name"><code>plot_tree_and_cn_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>MLE assignment of (low-depth) samples to a tree</p>
+    <p>Plot showing tree and CNA data site-by-site.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>add_lowpass_sampled</span><span class='op'>(</span>
-  <span class='va'>tree</span>,
-  <span class='va'>phydata</span>,
-  <span class='va'>sample_data</span>,
-  min_confidence <span class='op'>=</span> <span class='fl'>0</span>,
-  vaf_bkgr <span class='op'>=</span> <span class='fl'>0.01</span>,
-  purity_estimates <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0.75</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>sample_data</span><span class='op'>)</span><span class='op'>)</span>,
-  min_edge_length <span class='op'>=</span> <span class='fl'>0</span>,
-  return_details <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  optimize_values <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  max_vaf_bkgr <span class='op'>=</span> <span class='fl'>0.1</span>,
-  max_loss_frac <span class='op'>=</span> <span class='fl'>0</span>,
-  loss_frac_init <span class='op'>=</span> <span class='fl'>0</span>,
-  rescale_tree <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  control <span class='op'>=</span> <span class='cn'>NULL</span>,
-  n_bootstraps <span class='op'>=</span> <span class='fl'>0</span>,
-  n_cores <span class='op'>=</span> <span class='fl'>1</span>,
+    <pre class="usage"><span class='fu'>plot_tree_and_cn_data</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>cn_data</span>,
+  title <span class='op'>=</span> <span class='st'>""</span>,
+  dropped_samples <span class='op'>=</span> <span class='cn'>NULL</span>,
+  plot_tree_function <span class='op'>=</span> <span class='va'>plot_tree</span>,
+  labeller_function <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='va'>x</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -144,78 +134,38 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>tree</th>
-      <td><p>A tree object (of class phylo).</p></td>
+      <th>cn_data</th>
+      <td><p>CNA data as a named list of genomic ranges objects with a 'cn' metadata column.</p></td>
     </tr>
     <tr>
-      <th>phydata</th>
-      <td><p>Phylogenetic data used for the tree construction (of class phyDat). The attribute attr(*, "id") containng mutation ids has to be added (e.g., c("chr1:5_A/T", ...)</p></td>
+      <th>title</th>
+      <td><p>(optional) title for the plot.</p></td>
     </tr>
     <tr>
-      <th>sample_data</th>
-      <td><p>A list of mutation data of samples to add the the tree. Each element must contain a data frame with the following columns: 'id' the mutation id as set in the 'phydata' argument, 'alt' (or 'alt_count') the number of mutated reads, 'depth' (or 'dp') the coverage of the site, 'cn_total' (or 'cn') the copy-number of the site, 'cn_mutated' (or 'mm') the number of mutated alleles (this is assumed to be 1 if missing).</p></td>
+      <th>dropped_samples</th>
+      <td><p>(optional) vector of dropped samples.</p></td>
     </tr>
     <tr>
-      <th>min_confidence</th>
-      <td><p>(optional) minimum confidence in the the edge a sample is assigned to (default: 0).</p></td>
+      <th>plot_tree_function</th>
+      <td><p>(optional) function to plot the tree object.</p></td>
     </tr>
     <tr>
-      <th>vaf_bkgr</th>
-      <td><p>(optional) expected background mutation rate of unmutated sites (default 0.01).</p></td>
-    </tr>
-    <tr>
-      <th>purity_estimates</th>
-      <td><p>(optional) purity of the samples. Must be the same length as the sample_data list (default 1.0, pure samples).</p></td>
-    </tr>
-    <tr>
-      <th>min_edge_length</th>
-      <td><p>(optional) numeric value indicating the length of the edges to the added tips relative to the tree height (default: 0.01).</p></td>
-    </tr>
-    <tr>
-      <th>return_details</th>
-      <td><p>(optional) logical flag indicating if detailed information should be returned (default: false).</p></td>
-    </tr>
-    <tr>
-      <th>optimize_values</th>
-      <td><p>(optional) logical flag indicating if purity, background mutation rate, (and loss fraction) should be optimized (default: true).</p></td>
-    </tr>
-    <tr>
-      <th>max_vaf_bkgr</th>
-      <td><p>(optional) maximum background mutation rate (default: 0.1).</p></td>
-    </tr>
-    <tr>
-      <th>max_loss_frac</th>
-      <td><p>(optional) maximum loss fraction (default: 0).</p></td>
-    </tr>
-    <tr>
-      <th>loss_frac_init</th>
-      <td><p>(optional) initial value of loss fraction (default: 0).</p></td>
-    </tr>
-    <tr>
-      <th>rescale_tree</th>
-      <td><p>(optional) flag indicating if the tree should be rescaled (default: true).</p></td>
-    </tr>
-    <tr>
-      <th>control</th>
-      <td><p>(optional) control passed to optimizer (default: NULL).</p></td>
-    </tr>
-    <tr>
-      <th>n_bootstraps</th>
-      <td><p>(optional) Number of bootstraps to perform (default: 0).</p></td>
-    </tr>
-    <tr>
-      <th>n_cores</th>
-      <td><p>(optional) Number of cores to use for bootstrapping (default: 0).</p></td>
+      <th>labeller_function</th>
+      <td><p>(optional) function returning a modified version of sample labels.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>unused arguments.</p></td>
+      <td><p>(optional) arguments passed to the 'plot_tree_function' function.</p></td>
+    </tr>
+    <tr>
+      <th>d</th>
+      <td><p>Object returned from 'add_lowpass_sampled'.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tree object with the samples in 'sample_data' added to it.</p>
+    <p>A grob.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
