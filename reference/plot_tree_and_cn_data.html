@@ -125,7 +125,7 @@
   <span class='va'>cn_data</span>,
   title <span class='op'>=</span> <span class='st'>""</span>,
   dropped_samples <span class='op'>=</span> <span class='cn'>NULL</span>,
-  plot_tree_function <span class='op'>=</span> <span class='va'>plot_tree</span>,
+  plot_tree_function <span class='op'>=</span> <span class='cn'>NULL</span>,
   labeller_function <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='va'>x</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
@@ -133,6 +133,10 @@
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>Object returned from 'add_lowpass_sampled' or a object of type 'phylo'.</p></td>
+    </tr>
     <tr>
       <th>cn_data</th>
       <td><p>CNA data as a named list of genomic ranges objects with a 'cn' metadata column.</p></td>
@@ -156,10 +160,6 @@
     <tr>
       <th>...</th>
       <td><p>(optional) arguments passed to the 'plot_tree_function' function.</p></td>
-    </tr>
-    <tr>
-      <th>d</th>
-      <td><p>Object returned from 'add_lowpass_sampled'.</p></td>
     </tr>
     </table>
 
