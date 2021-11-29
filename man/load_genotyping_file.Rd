@@ -11,7 +11,8 @@ load_genotyping_file(file, use = NULL, cn_data = NULL)
 
 \item{use}{Optional vector of mutation ids to use.}
 
-\item{cn_data}{Either a Genomic Ranges object containing cn and mm metadata columns or a data.frame with a id, cn and mm column.}
+\item{cn_data}{Either a Genomic Ranges object containing cn and mm metadata columns or
+a data.frame with a id, cn and mm column.}
 }
 \value{
 A tibble containing the genotyping data.

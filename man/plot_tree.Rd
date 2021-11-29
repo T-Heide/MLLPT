@@ -12,7 +12,8 @@ plot_tree(
   pointsize = 1,
   textsize = 2.5,
   labeller_function = NULL,
-  keep_conf_label = FALSE
+  keep_conf_label = FALSE,
+  subset = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ plot_tree(
 \item{labeller_function}{(optional) HI of the tree (unused).}
 
 \item{keep_conf_label}{(optional) Flat indicating if `confidence label' should be keeped (default: FALSE).}
+
+\item{subset}{(optional) character vector defining a subset of samples to plot.}
 }
 \value{
 ggplot object

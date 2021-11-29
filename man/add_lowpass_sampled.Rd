@@ -10,9 +10,9 @@ add_lowpass_sampled(
   sample_data,
   min_confidence = 0,
   vaf_bkgr = 0.01,
-  purity_estimates = rep(1, length(sample_data)),
+  purity_estimates = rep(0.75, length(sample_data)),
   min_edge_length = 0,
-  return_details = FALSE,
+  return_details = TRUE,
   optimize_values = TRUE,
   max_vaf_bkgr = 0.1,
   max_loss_frac = 0,
@@ -27,21 +27,36 @@ add_lowpass_sampled(
 \arguments{
 \item{tree}{A tree object (of class phylo).}
 
-\item{phydata}{Phylogenetic data used for the tree construction (of class phyDat). The attribute attr(*, "id") containng mutation ids has to be added (e.g., c("chr1:5_A/T", ...)}
+\item{phydata}{Phylogenetic data used for the tree construction (of class phyDat).
 
-\item{sample_data}{A list of mutation data of samples to add the the tree. Each element must contain a data frame with the following columns: 'id' the mutation id as set in the 'phydata' argument, 'alt' (or 'alt_count') the number of mutated reads, 'depth' (or 'dp') the coverage of the site, 'cn_total' (or 'cn') the copy-number of the site, 'cn_mutated' (or 'mm') the number of mutated alleles (this is assumed to be 1 if missing).}
+Note: The attribute attr(*, "id") containng mutation ids has to be added (e.g., c("chr1:5_A/T", ...)}
+
+\item{sample_data}{A list of mutation data of samples to add the the tree.
+
+Each element must contain a data frame with the following columns:
+ \itemize{
+ \item{'id': }{The mutation id as set in the 'phydata' argument.}
+ \item{'alt' (or 'alt_count'): }{The number of mutated reads.}
+ \item{'depth' (or 'dp'): }{The coverage of the site.}
+ \item{'cn_total' (or 'cn'): }{The copy-number of the site.}
+ \item{'cn_mutated' (or 'mm'): }{The number of mutated alleles (this is assumed to be 1 if missing).}
+ }}
 
 \item{min_confidence}{(optional) minimum confidence in the the edge a sample is assigned to (default: 0).}
 
 \item{vaf_bkgr}{(optional) expected background mutation rate of unmutated sites (default 0.01).}
 
-\item{purity_estimates}{(optional) purity of the samples. Must be the same length as the sample_data list (default 1.0, pure samples).}
+\item{purity_estimates}{(optional) purity of the samples.
+Must be the same length as the sample_data list (default 1.0, pure samples).}
 
-\item{min_edge_length}{(optional) numeric value indicating the length of the edges to the added tips relative to the tree height (default: 0.01).}
+\item{min_edge_length}{(optional) numeric value indicating the length of the edges
+to the added tips relative to the tree height (default: 0.01).}
 
-\item{return_details}{(optional) logical flag indicating if detailed information should be returned (default: false).}
+\item{return_details}{(optional) logical flag indicating if detailed
+information should be returned (default: false).}
 
-\item{optimize_values}{(optional) logical flag indicating if purity, background mutation rate, (and loss fraction) should be optimized (default: true).}
+\item{optimize_values}{(optional) logical flag indicating if purity, background mutation rate,
+(and loss fraction) should be optimized (default: true).}
 
 \item{max_vaf_bkgr}{(optional) maximum background mutation rate (default: 0.1).}
 

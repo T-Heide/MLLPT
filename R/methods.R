@@ -1,14 +1,29 @@
 #' MLE assignment of (low-depth) samples to a tree
 #'
 #' @param tree A tree object (of class phylo).
-#' @param phydata Phylogenetic data used for the tree construction (of class phyDat). The attribute attr(*, "id") containng mutation ids has to be added (e.g., c("chr1:5_A/T", ...)
-#' @param sample_data A list of mutation data of samples to add the the tree. Each element must contain a data frame with the following columns: 'id' the mutation id as set in the 'phydata' argument, 'alt' (or 'alt_count') the number of mutated reads, 'depth' (or 'dp') the coverage of the site, 'cn_total' (or 'cn') the copy-number of the site, 'cn_mutated' (or 'mm') the number of mutated alleles (this is assumed to be 1 if missing).
+#' @param phydata Phylogenetic data used for the tree construction (of class phyDat).
+#'
+#' Note: The attribute attr(*, "id") containng mutation ids has to be added (e.g., c("chr1:5_A/T", ...)
+#' @param sample_data A list of mutation data of samples to add the the tree.
+#'
+#' Each element must contain a data frame with the following columns:
+#'  \itemize{
+#'  \item{'id': }{The mutation id as set in the 'phydata' argument.}
+#'  \item{'alt' (or 'alt_count'): }{The number of mutated reads.}
+#'  \item{'depth' (or 'dp'): }{The coverage of the site.}
+#'  \item{'cn_total' (or 'cn'): }{The copy-number of the site.}
+#'  \item{'cn_mutated' (or 'mm'): }{The number of mutated alleles (this is assumed to be 1 if missing).}
+#'  }
 #' @param min_confidence (optional) minimum confidence in the the edge a sample is assigned to (default: 0).
 #' @param vaf_bkgr (optional) expected background mutation rate of unmutated sites (default 0.01).
-#' @param purity_estimates  (optional) purity of the samples. Must be the same length as the sample_data list (default 1.0, pure samples).
-#' @param min_edge_length  (optional) numeric value indicating the length of the edges to the added tips relative to the tree height (default: 0.01).
-#' @param return_details  (optional) logical flag indicating if detailed information should be returned (default: false).
-#' @param optimize_values  (optional) logical flag indicating if purity, background mutation rate, (and loss fraction) should be optimized (default: true).
+#' @param purity_estimates  (optional) purity of the samples.
+#' Must be the same length as the sample_data list (default 1.0, pure samples).
+#' @param min_edge_length  (optional) numeric value indicating the length of the edges
+#' to the added tips relative to the tree height (default: 0.01).
+#' @param return_details  (optional) logical flag indicating if detailed
+#' information should be returned (default: false).
+#' @param optimize_values  (optional) logical flag indicating if purity, background mutation rate,
+#' (and loss fraction) should be optimized (default: true).
 #' @param max_vaf_bkgr  (optional) maximum background mutation rate (default: 0.1).
 #' @param max_loss_frac  (optional) maximum loss fraction (default: 0).
 #' @param loss_frac_init  (optional) initial value of loss fraction (default: 0).
@@ -20,10 +35,29 @@
 #' @return A tree object with the samples in 'sample_data' added to it.
 #' @export
 #' @import treeman
-add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf_bkgr=0.01, purity_estimates=rep(1, length(sample_data)), min_edge_length=0, return_details=FALSE, optimize_values=TRUE, max_vaf_bkgr=0.1, max_loss_frac = 0, loss_frac_init = 0, rescale_tree=TRUE, control=NULL, n_bootstraps=0, n_cores=1, ...) {
+add_lowpass_sampled =
+  function(
+    tree,
+    phydata,
+    sample_data,
+    min_confidence = 0,
+    vaf_bkgr = 0.01,
+    purity_estimates = rep(0.75, length(sample_data)),
+    min_edge_length = 0,
+    return_details = TRUE,
+    optimize_values = TRUE,
+    max_vaf_bkgr = 0.1,
+    max_loss_frac = 0,
+    loss_frac_init = 0,
+    rescale_tree = TRUE,
+    control = NULL,
+    n_bootstraps = 0,
+    n_cores = 1,
+    ...
+  ) {
 
-  if (packageVersion("treeman") < '1.1.5'){
-    stop('Please install treeman > 1.1.5 using remotes::install_github("DomBennett/treeman")\n')
+  if (utils::packageVersion("treeman") < "1.1.5") {
+    stop("Please install treeman > 1.1.5 using remotes::install_github(\"DomBennett/treeman\")\n")
   }
 
   initial_values = mget(ls())
@@ -40,10 +74,10 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
       dplyr::filter(!is.na(cn_total)) %>%
       dplyr::filter(cn_total <= 4) %>%
       dplyr::filter(cn_total > 0) %>%
+      dplyr::filter(depth > 0) %>%
       dplyr::select(alt_count, depth, cn_mutated, cn_total) %>%
       dplyr::count(alt_count, depth, cn_mutated, cn_total) %>%
-      magrittr::set_colnames(c("n","N","mm","cn","weight")) #%>%
-    #dplyr::filter(N > 0)
+      magrittr::set_colnames(c("n", "N", "mm", "cn", "weight"))
 
   }
 
@@ -80,7 +114,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
       if ("mm" %in% colnames(d)) { # use mm if available else use 1
         d$cn_mutated = d$mm
       } else {
-        d$cn_mutated = 1 # defaults to 1
+        d$cn_mutated = rep(1, NROW(d)) # defaults to 1
       }
     }
 
@@ -92,24 +126,24 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   al = checkmate::makeAssertCollection()
-  checkmate::assertClass(tree, "phylo", add=al)
-  checkmate::assertClass(phydata, "phyDat", add=al)
-  checkmate::assertSetEqual(names(phydata), tree$tip.label, add=al)
-  checkmate::assertList(sample_data, names="named", any.missing=FALSE, types="data.frame", min.len=1, add=al)
-  checkmate::assertList(lapply(sample_data, correct_mdata_structure), add=al)
-  checkmate::assertNumeric(min_confidence, lower = 0, upper = 1, len = 1, any.missing = FALSE, add=al)
-  checkmate::assertNumeric(vaf_bkgr, lower = 0, upper = 1, len = 1, any.missing = FALSE, add=al)
-  checkmate::assertNumeric(purity_estimates, lower = 0, upper = 1, len = length(sample_data), any.missing = FALSE, add=al)
-  checkmate::assertNumeric(min_edge_length, lower = 0, len = 1, finite = TRUE, any.missing = FALSE, add=al)
-  checkmate::assertFlag(return_details, add=al)
-  checkmate::assertFlag(optimize_values, add=al)
-  checkmate::assertNumeric(max_vaf_bkgr, lower = 0, upper = 0.5, len = 1, any.missing = FALSE, add=al)
-  checkmate::assertNumeric(max_loss_frac, lower = 0, upper = 0.5, len = 1, any.missing = FALSE, add=al)
-  checkmate::assertTRUE(max_loss_frac >= loss_frac_init, add=al)
-  checkmate::assertTRUE(max_vaf_bkgr >= vaf_bkgr, add=al)
-  checkmate::assertFlag(rescale_tree, add=al)
-  checkmate::assertIntegerish(n_bootstraps, add=al)
-  checkmate::assertIntegerish(n_cores, add=al)
+  checkmate::assertClass(tree, "phylo", add = al)
+  checkmate::assertClass(phydata, "phyDat", add = al)
+  checkmate::assertSetEqual(names(phydata), tree$tip.label, add = al)
+  checkmate::assertList(sample_data, names = "named", any.missing = FALSE, types = "data.frame", min.len = 1, add = al)
+  checkmate::assertList(lapply(sample_data, correct_mdata_structure), add = al)
+  checkmate::assertNumeric(min_confidence, lower = 0, upper = 1, len = 1, any.missing = FALSE, add = al)
+  checkmate::assertNumeric(vaf_bkgr, lower = 0, upper = 1, len = 1, any.missing = FALSE, add = al)
+  checkmate::assertNumeric(purity_estimates, lower = 0, upper = 1, len = length(sample_data), any.missing = FALSE, add = al)
+  checkmate::assertNumeric(min_edge_length, lower = 0, len = 1, finite = TRUE, any.missing = FALSE, add = al)
+  checkmate::assertFlag(return_details, add = al)
+  checkmate::assertFlag(optimize_values, add = al)
+  checkmate::assertNumeric(max_vaf_bkgr, lower = 0, upper = 0.5, len = 1, any.missing = FALSE, add = al)
+  checkmate::assertNumeric(max_loss_frac, lower = 0, upper = 0.5, len = 1, any.missing = FALSE, add = al)
+  checkmate::assertTRUE(max_loss_frac >= loss_frac_init, add = al)
+  checkmate::assertTRUE(max_vaf_bkgr >= vaf_bkgr, add = al)
+  checkmate::assertFlag(rescale_tree, add = al)
+  checkmate::assertIntegerish(n_bootstraps, add = al)
+  checkmate::assertIntegerish(n_cores, add = al)
   checkmate::reportAssertions(al)
 
   if (max_vaf_bkgr > 0.1)
@@ -132,8 +166,8 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   initial_values$sample_data = sample_data # more compact version of data
 
   root_node = phangorn::getRoot(tree)
-  tip_rooted_on = min(tree$edge[tree$edge[,1] == root_node,2])
-  root_to_tip_edge = which(tree$edge[,1] == root_node & tree$edge[,2] == tip_rooted_on)
+  tip_rooted_on = min(tree$edge[tree$edge[, 1] == root_node, 2])
+  root_to_tip_edge = which(tree$edge[, 1] == root_node & tree$edge[, 2] == tip_rooted_on)
 
   mids_per_edge = get_mutation_ids_per_edge(tree, phydata)
   stopifnot(is.null(unlist(mids_per_edge[[as.character(root_to_tip_edge)]])))
@@ -160,11 +194,12 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   per_edge_ll_data = list()
   per_edge_mdata = list()
   tree$node.label = paste0("N", seq_len(tree$Nnode))
-  tree_tm = as(tree, 'TreeMan') #
+  tree_tm = methods::as(tree, "TreeMan") #
   purity_optim = numeric()
   vaf_optim = numeric()
   loss_frac_optim = numeric()
   mll = numeric()
+  s_idx = numeric()
   edges_samples = integer()
   pi_samples = numeric()
   bootstrap_results = list()
@@ -178,7 +213,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
   # Lookup tables
   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-  edge_to_node = tree$edge[,2]
+  edge_to_node = tree$edge[, 2]
   names(edge_to_node) = seq_along(edge_to_node)
   edge_to_node = edge_to_node[-root_to_tip_edge]
 
@@ -191,7 +226,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     next_node = edge_to_node[as.character(x)]
     anc_nodes = phangorn::Ancestors(tree, next_node)
     anc_edges = as.character(node_to_edge[as.character(anc_nodes)])
-    na.omit(anc_edges)
+    stats::na.omit(anc_edges)
   })
 
   not_anc_edge = lapply(names(edge_to_node), function(x) {
@@ -222,15 +257,15 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     if (max_loss_frac) loss_frac = loss_frac_init else loss_frac = 0
 
     # skip in some cases
-    if (is.na(sample_purity)) next()
-    if (NROW(data) == 0) next()
+    if (is.na(sample_purity)) next ()
+    if (NROW(data) == 0) next ()
     if (sample %in% tree$tip.label) {
-      n_dup = sum(c(tree$tip.label, added_tips)==sample)+1
+      n_dup = sum(c(tree$tip.label, added_tips) == sample)
       sample = paste0(sample, paste0(rep("_", n_dup), collapse = ""))
     }
 
     # mutation data of each edge
-    per_edge_data = lapply(mids_per_edge_gain, get_data, data=data)
+    per_edge_data = lapply(mids_per_edge_gain, get_data, data = data)
     per_edge_mdata[[sample]] = per_edge_data
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -243,14 +278,14 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         d = d[[edge]]
 
         if (pi_m > 0) {
-          vaf_m = (d$mm * v) / (v * d$cn + (1-v) * 2) # expected vaf for each mutation
-          vaf_m = vaf_m * (1-bkg_rate) + bkg_rate
-          d1 = dbinom(d$n, d$N, vaf_m)
+          vaf_m = (d$mm * v) / (v * d$cn + (1 - v) * 2) # expected vaf for each mutation
+          vaf_m = vaf_m * (1 - bkg_rate) + bkg_rate
+          d1 = stats::dbinom(d$n, d$N, vaf_m)
         } else {
           d1 = 0
         }
 
-        d0 = dbinom(d$n, d$N, bkg_rate)
+        d0 = stats::dbinom(d$n, d$N, bkg_rate)
 
         val = sum(log(d1 * pi_m + d0 * (1 - pi_m)) * d$weight)
         return(val)
@@ -303,7 +338,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
       results = list(
         per_edge_max_ll = magrittr::set_names(rep(NA, length(edges)), edges),
         per_edge_opt_params = list(),
-        params = magrittr::set_names(init, c("pos","purity","bkg","loss")),
+        params = magrittr::set_names(init, c("pos", "purity", "bkg", "loss")),
         max_ll = -Inf,
         edge_opt = NA
       )
@@ -324,10 +359,10 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
           lower = lower[optim],
           upper = upper[optim],
           method = "L-BFGS-B",
-          control = c(list(ndeps=rep(1e-6, sum(optim))), control)
+          control = c(list(ndeps = rep(1e-6, sum(optim))), control)
         )
 
-        if (opt_new$convergence != 0){
+        if (opt_new$convergence != 0) {
           stop(opt_new$message)
         }
 
@@ -335,7 +370,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         results$per_edge_max_ll[e] = -opt_new[["value"]]
         results$per_edge_opt_params[[e]] = init
         results$per_edge_opt_params[[e]][optim] = opt_new[["par"]]
-        names(results$per_edge_opt_params[[e]]) = c("pos","purity","bkg","loss")
+        names(results$per_edge_opt_params[[e]]) = c("pos", "purity", "bkg", "loss")
 
         if (-opt_new$value > results$max_ll) {
           # if generally better then other update results
@@ -355,7 +390,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
       e = rep(names(d), vapply(d, NROW, integer(1)))
       n = as.numeric(unlist(lapply(d, "[", "weight")))
 
-      idx = sample(seq_along(i), sum(n), replace=TRUE, prob=n)
+      idx = sample(seq_along(i), sum(n), replace = TRUE, prob = n)
       n_dash = table(idx)[as.character(seq_along(i))]; n_dash[is.na(n_dash)] = 0
       #n_dash = MCMCpack::rdirichlet(1, n) * sum(n)
       for (j in seq_along(i)) d[[e[j]]]$weight[i[j]] = n_dash[j]
@@ -379,17 +414,17 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
     optim = c(TRUE, optimize_values, optimize_values, max_loss_frac > 0 & optimize_values)
     lower = c(0, 0, .Machine$double.eps, 0)
-    upper = c(1, 1-1e-3, max_vaf_bkgr, max_loss_frac)
-    init = c(0, scales::squish(sample_purity, 0, 1-1e-3), vaf_bkgr_sample, loss_frac)
+    upper = c(1, 1 - 1e-3, max_vaf_bkgr, max_loss_frac)
+    init = c(0, scales::squish(sample_purity, 0, 1 - 1e-3), vaf_bkgr_sample, loss_frac)
     optimiser_results = .optimize_params(per_edge_data, init, lower, upper, optim)
 
     if (n_bootstraps) {
       cat("Bootstrapping data", n_bootstraps, "times...\n")
-      withr::with_options(list(width=60), {
+      withr::with_options(list(width = 60), {
         bootstrap_results[[sample]] =
-          pbmcapply::pbmclapply(seq_len(n_bootstraps), function(i){
+          pbmcapply::pbmclapply(seq_len(n_bootstraps), function(i) {
             .bootstrap(per_edge_data, init, lower, upper, optim)
-          }, mc.cores = n_cores) %>% do.call(what=rbind)
+          }, mc.cores = n_cores) %>% do.call(what = rbind)
       })
     } else {
       bootstrap_results[sample] = list(NULL)
@@ -400,6 +435,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
       mll[sample] = optimiser_results$max_ll
       edges_samples[sample] = optimiser_results$edge_opt
       pi_samples[sample] = optimiser_results$params["pos"]
+      s_idx[sample] = j
     }
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -415,7 +451,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
         loss_frac = loss_frac
       )
 
-      with(optimiser_results,{
+      with(optimiser_results, {
         cat("\n")
         cat("New values:\n")
         cat("\n")
@@ -445,7 +481,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     if (return_details) {
 
       # sum of log-likelihoods along the tree
-      vals_pi_per_edge = seq(0, 1, length=100)
+      vals_pi_per_edge = seq(0, 1, length = 100)
 
       per_edge_ll =
         lapply(names(edge_to_node), function(edge) {
@@ -481,8 +517,8 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
     } else {
       # normalize edge data and use as confidence value
       log_sum_exp = with(optimiser_results, exp(per_edge_max_ll - max_ll))
-      lik_edge = log_sum_exp / sum(log_sum_exp, na.rm=TRUE)
-      max_lik_edge = max(lik_edge, na.rm=TRUE)
+      lik_edge = log_sum_exp / sum(log_sum_exp, na.rm = TRUE)
+      max_lik_edge = max(lik_edge, na.rm = TRUE)
     }
 
     if (max_lik_edge > min_confidence) {  # assign sample to tree if high confidence edge found.
@@ -498,7 +534,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
 
         # relative position to add to
-        range_sid = spns[sid,]
+        range_sid = spns[sid, ]
         rel_pos = 1 - pi_opt
         if (rel_pos <= 0) rel_pos = min_edge_length
         if (rel_pos >= 1) rel_pos = 1 - min_edge_length
@@ -546,7 +582,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
 
         # store labels for later change
-        cat("=> Added sample (confidence: ", max_lik_edge, ")\n\n", sep="")
+        cat("=> Added sample (confidence: ", max_lik_edge, ")\n\n", sep = "")
         new_tip = paste0(sample, " (Added confidence: ", signif(max_lik_edge, 6), ")")
         added_tips[[sample]] = new_tip
 
@@ -560,10 +596,10 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
 
   # convert the tree back to phylo class
-  tree_mod = as(tree_tm, "phylo")
+  tree_mod = methods::as(tree_tm, "phylo")
   wh_relabel = tree_mod$tip.label %in% names(added_tips)
   tree_mod$tip.label[wh_relabel] = added_tips[tree_mod$tip.label[wh_relabel]]
-  tree_mod$node.label=NULL
+  tree_mod$node.label = NULL
 
 
   # return extensive result set?
@@ -571,6 +607,7 @@ add_lowpass_sampled = function(tree, phydata, sample_data, min_confidence=0, vaf
 
     per_sample_results =
       data.frame(
+        idx = s_idx,
         sample = names(edges_samples),
         edge = edges_samples,
         pi = pi_samples[names(edges_samples)],
@@ -613,8 +650,8 @@ get_mutation_ids_per_edge = function(tree, phydata) {
   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   al = checkmate::makeAssertCollection()
-  checkmate::assertClass(tree, "phylo", add=al)
-  checkmate::assertClass(phydata, "phyDat", add=al)
+  checkmate::assertClass(tree, "phylo", add = al)
+  checkmate::assertClass(phydata, "phyDat", add = al)
   checkmate::reportAssertions(al)
 
   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -624,7 +661,7 @@ get_mutation_ids_per_edge = function(tree, phydata) {
   mids_per_site_pattern = split(attr(phydata, "id"), attr(phydata, "index"))
 
   root_node = phangorn::getRoot(tree)
-  wh_rooted_on = min(tree$edge[tree$edge[,1] == root_node,2])
+  wh_rooted_on = min(tree$edge[tree$edge[, 1] == root_node, 2])
   anc_state[[root_node]] = anc_state[[wh_rooted_on]]
 
   # assign mutations to each
@@ -634,8 +671,8 @@ get_mutation_ids_per_edge = function(tree, phydata) {
       node_from = tree$edge[idx_edge, 1]
       node_to = tree$edge[idx_edge, 2]
 
-      state_mut_from = anc_state[[node_from]][,2]
-      state_mut_to = anc_state[[node_to]][,2]
+      state_mut_from = anc_state[[node_from]][, 2]
+      state_mut_to = anc_state[[node_to]][, 2]
 
       muts_added = state_mut_to > state_mut_from
       muts_lossed = state_mut_to < state_mut_from
@@ -643,7 +680,7 @@ get_mutation_ids_per_edge = function(tree, phydata) {
       mids_added = unlist(mids_per_site_pattern[which(muts_added)])
       mids_lossed = unlist(mids_per_site_pattern[which(muts_lossed)])
 
-      return(list(added=mids_added, lost=mids_lossed))
+      return(list(added = mids_added, lost = mids_lossed))
     })
 
   names(muts_per_edge) = seq_len(NROW(muts_per_edge))
@@ -656,7 +693,8 @@ get_mutation_ids_per_edge = function(tree, phydata) {
 #'
 #' @param file Input file
 #' @param use Optional vector of mutation ids to use.
-#' @param cn_data Either a Genomic Ranges object containing cn and mm metadata columns or a data.frame with a id, cn and mm column.
+#' @param cn_data Either a Genomic Ranges object containing cn and mm metadata columns or
+#' a data.frame with a id, cn and mm column.
 #'
 #' @return A tibble containing the genotyping data.
 #' @export
@@ -669,7 +707,7 @@ load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
     if (inherits(cn_data, "GenomicRanges")) {
       stopifnot("cn" %in% names(S4Vectors::elementMetadata(cn_data)))
     } else if (is.data.frame(cn_data)) {
-      stopifnot(c("id","cn") %in% colnames(cn_data))
+      stopifnot(c("id", "cn") %in% colnames(cn_data))
     } else {
       stop("'cn_data' has to be a data.frame or GenomicRanges object.\n")
     }
@@ -684,7 +722,7 @@ load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
         x %>%
         dplyr::filter(gsub("chr", "", chr) %in% 1:22) %>%
         dplyr::filter(source == "S") %>%
-        dplyr::mutate(id=sprintf("%s:%d_%s/%s", chr, pos, ref, alt)) %>%
+        dplyr::mutate(id = sprintf("%s:%d_%s/%s", chr, pos, ref, alt)) %>%
         dplyr::mutate(vaf = alt_count / depth) %>%
         dplyr::filter(id %in% use | is.null(use)) %>%
         dplyr::mutate(copy_number = NA, mm = NA)
@@ -695,7 +733,7 @@ load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
           # 1) GRanges
 
           mdata_gr = with(chunk_data, GenomicRanges::GRanges(chr, IRanges::IRanges(pos, pos)))
-          ol = GenomicRanges::findOverlaps(mdata_gr, cn_data, type="any", select="first")
+          ol = GenomicRanges::findOverlaps(mdata_gr, cn_data, type = "any", select = "first")
           chunk_data$copy_number = cn_data$cn[ol]
 
           # mm col
@@ -745,7 +783,7 @@ load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
 
       parsed_data <<- rbind(parsed_data, chunk_data)
 
-      return(!all(x[,"source"] == "GL"))
+      return(!all(x[, "source"] == "GL"))
     }
 
   #---------------------------------------------
@@ -761,15 +799,13 @@ load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
       col_types = "-cicc--iic",
      progress = FALSE
     )
-  }, error=function(e) {
-    cat(
+  }, error = function(e) {
+    stop(
       "Failed to load file '",
       basename(file),
       "'. Wrong file format?\n",
       sep = ""
     )
-    print(e)
-    parsed_data <<- NULL
   })
 
   if (!all(is.na(parsed_data$copy_number))) {
@@ -780,4 +816,3 @@ load_genotyping_file = function(file, use=NULL, cn_data=NULL) {
 
   return(parsed_data)
 }
-

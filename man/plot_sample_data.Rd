@@ -6,7 +6,7 @@
 \usage{
 plot_sample_data(
   d,
-  labeller_function = function(x) return(x),
+  labeller_function = NULL,
   external_purity_estimate = NULL,
   label_external_purity = "Independent estimate",
   subset = NULL
