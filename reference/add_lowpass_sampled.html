@@ -149,11 +149,19 @@
     </tr>
     <tr>
       <th>phydata</th>
-      <td><p>Phylogenetic data used for the tree construction (of class phyDat). The attribute attr(*, "id") containng mutation ids has to be added (e.g., c("chr1:5_A/T", ...)</p></td>
+      <td><p>Phylogenetic data used for the tree construction (of class phyDat).</p>
+<p>Note: The attribute attr(*, "id") containng mutation ids has to be added (e.g., c("chr1:5_A/T", ...)</p></td>
     </tr>
     <tr>
       <th>sample_data</th>
-      <td><p>A list of mutation data of samples to add the the tree. Each element must contain a data frame with the following columns: 'id' the mutation id as set in the 'phydata' argument, 'alt' (or 'alt_count') the number of mutated reads, 'depth' (or 'dp') the coverage of the site, 'cn_total' (or 'cn') the copy-number of the site, 'cn_mutated' (or 'mm') the number of mutated alleles (this is assumed to be 1 if missing).</p></td>
+      <td><p>A list of mutation data of samples to add the the tree.</p>
+<p>Each element must contain a data frame with the following columns:</p><ul>
+<li><p>'id': The mutation id as set in the 'phydata' argument.</p></li>
+<li><p>'alt' (or 'alt_count'): The number of mutated reads.</p></li>
+<li><p>'depth' (or 'dp'): The coverage of the site.</p></li>
+<li><p>'cn_total' (or 'cn'): The copy-number of the site.</p></li>
+<li><p>'cn_mutated' (or 'mm'): The number of mutated alleles (this is assumed to be 1 if missing).</p></li>
+</ul></td>
     </tr>
     <tr>
       <th>min_confidence</th>
@@ -165,19 +173,23 @@
     </tr>
     <tr>
       <th>purity_estimates</th>
-      <td><p>(optional) purity of the samples. Must be the same length as the sample_data list (default 1.0, pure samples).</p></td>
+      <td><p>(optional) purity of the samples.
+Must be the same length as the sample_data list (default 1.0, pure samples).</p></td>
     </tr>
     <tr>
       <th>min_edge_length</th>
-      <td><p>(optional) numeric value indicating the length of the edges to the added tips relative to the tree height (default: 0.01).</p></td>
+      <td><p>(optional) numeric value indicating the length of the edges
+to the added tips relative to the tree height (default: 0.01).</p></td>
     </tr>
     <tr>
       <th>return_details</th>
-      <td><p>(optional) logical flag indicating if detailed information should be returned (default: false).</p></td>
+      <td><p>(optional) logical flag indicating if detailed
+information should be returned (default: false).</p></td>
     </tr>
     <tr>
       <th>optimize_values</th>
-      <td><p>(optional) logical flag indicating if purity, background mutation rate, (and loss fraction) should be optimized (default: true).</p></td>
+      <td><p>(optional) logical flag indicating if purity, background mutation rate,
+(and loss fraction) should be optimized (default: true).</p></td>
     </tr>
     <tr>
       <th>max_vaf_bkgr</th>
