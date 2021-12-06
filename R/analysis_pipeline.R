@@ -42,7 +42,7 @@ get_phydat_from_genotyping = function(d, vaf_threshold=0.05) {
 parse_data_files =
   function(
     files,
-    cutoff_deep = 10,
+    cutoff_deep = 20,
     vaf_threshold = 0.05,
     minit = 100,
     cna_data = NULL,
@@ -64,6 +64,7 @@ parse_data_files =
   data = Map(
     MLLPT::load_genotyping_file,
     file = as.list(files),
+    use = list(use),
     cn_data = magrittr::set_names(cna_data[names(files)], names(files))
   )
 
@@ -79,6 +80,7 @@ parse_data_files =
 
   # identify regions with equal cn in all samples:
   cn_matrix_deep = do.call(cbind, lapply(data_deep, "[[", "copy_number"))
+  rownames(cn_matrix_deep) = ids
   all_equal = apply(cn_matrix_deep, 1, function(x) all(x == x[1]))
   wh_use = all_equal & dplyr::between(cn_matrix_deep[, 1], 1, 4)
   for (i in seq_along(data_lp)) data_lp[[i]] = data_lp[[i]][wh_use, ]
@@ -111,7 +113,8 @@ parse_data_files =
       n_alt = apply(x, 1, sum),
       depth = apply(n, 1, sum),
       multiplicity = mm,
-      copy_number = cn[, 1]
+      copy_number = cn[, 1],
+      row.names = data_deep[[1]]$id
     )
 
     for (i in seq_along(data_lp))
@@ -165,7 +168,8 @@ parse_data_files =
         sample_data = data_lp,
         min_confidence = 0,
         min_edge_length = 0,
-        return_details = TRUE
+        return_details = TRUE,
+        ...
       )
   }
 
@@ -176,7 +180,10 @@ parse_data_files =
     tree_lp_results = lp_tree_results,
     cn_matrix = cn_matrix_deep,
     frac_snvs_used = frac_equal_cn,
-    multiplicity_data = multiplicity_data
+    multiplicity_data = multiplicity_data,
+    mutation_data_deep = data_deep,
+    mutation_data_lp = data_lp,
+    purity_estimates = purity_estimates
   ))
 }
 
