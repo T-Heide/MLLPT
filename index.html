@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,18 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">MLLPT</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -66,44 +62,43 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="mllpt-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#mllpt-" class="anchor"></a>MLLPT <img src="reference/figures/logo.png" align="right" height="139">
+<div class="section level1">
+<div class="page-header"><h1 id="mllpt-">MLLPT <img src="reference/figures/logo.png" align="right" height="139"><a class="anchor" aria-label="anchor" href="#mllpt-"></a>
 </h1></div>
 <!-- badges: start -->
 
 <p>Maximum likelihood assignment of low-pass samples (MLLPT)</p>
 <hr>
-<div id="installation" class="section level4">
-<h4 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h4>
+<div class="section level4">
+<h4 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'dombennett/treeman'</span><span class="op">)</span> <span class="co"># package requires newest version of treeman (not on CRAN)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"T-Heide/MLLPT"</span><span class="op">)</span></code></pre></div>
 <hr>
 </div>
-<div id="help-and-support" class="section level4">
-<h4 class="hasAnchor">
-<a href="#help-and-support" class="anchor"></a>Help and support</h4>
-<p><a href="https://t-heide.github.io/MLLPT/"><img src="https://img.shields.io/badge/GitHub%20Pages-https://t--heide.github.io/MLLPT/-informational"></a></p>
+<div class="section level4">
+<h4 id="help-and-support">Help and support<a class="anchor" aria-label="anchor" href="#help-and-support"></a>
+</h4>
+<p><a href="https://t-heide.github.io/MLLPT/" class="external-link"><img src="https://img.shields.io/badge/GitHub%20Pages-https://t--heide.github.io/MLLPT/-informational"></a></p>
 <hr>
 </div>
-<div id="getting-started" class="section level4">
-<h4 class="hasAnchor">
-<a href="#getting-started" class="anchor"></a>Getting started</h4>
+<div class="section level4">
+<h4 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">MLLPT</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/KlausVigo/phangorn">phangorn</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">MLLPT</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/KlausVigo/phangorn" class="external-link">phangorn</a></span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">## Loading required package: ape</span></span></code></pre></div>
-<div id="1-input-data" class="section level5">
-<h5 class="hasAnchor">
-<a href="#1-input-data" class="anchor"></a>1) Input data</h5>
+<div class="section level5">
+<h5 id="1-input-data">1) Input data<a class="anchor" aria-label="anchor" href="#1-input-data"></a>
+</h5>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"example_lp_data"</span>, package<span class="op">=</span><span class="st">"MLLPT"</span><span class="op">)</span> <span class="co"># example dataset included in the package</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"example_lp_data"</span>, package<span class="op">=</span><span class="st">"MLLPT"</span><span class="op">)</span> <span class="co"># example dataset included in the package</span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># 1/3 a phylogenetic tree</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">tree</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">tree</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">## </span></span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="co">## Phylogenetic tree with 7 tips and 6 internal nodes.</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a><span class="co">## </span></span>
@@ -113,15 +108,15 @@
 <span id="cb6-7"><a href="#cb6-7"></a><span class="co">## Rooted; includes branch lengths.</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># 2/3 a phylo object (with id attribute)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">phydata</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">phydata</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">## 7 sequences with 7152 character and 19 different site patterns.</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="co">## The states are 0 1</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">phydata</span>, <span class="st">"id"</span><span class="op">)</span><span class="op">)</span> <span class="co"># a non default attribute of mutation ids!</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">phydata</span>, <span class="st">"id"</span><span class="op">)</span><span class="op">)</span> <span class="co"># a non default attribute of mutation ids!</span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">## [1] "1X0" "1X1" "1X2" "1X3" "1X4" "1X5"</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># 3/3 a list of sample data</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">samples</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">example_lp_data</span><span class="op">$</span><span class="va">samples</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">## List of 2</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a><span class="co">##  $ EPICC_C518_C1_G1_L1:'data.frame': 40452 obs. of  7 variables:</span></span>
 <span id="cb12-3"><a href="#cb12-3"></a><span class="co">##   ..$ clone    : num [1:40452] 1 1 1 1 1 1 1 1 1 1 ...</span></span>
@@ -140,12 +135,12 @@
 <span id="cb12-16"><a href="#cb12-16"></a><span class="co">##   ..$ vaf      : num [1:36212] NaN 1 0 1 0 NaN NaN 0.5 0 0.25 ...</span></span>
 <span id="cb12-17"><a href="#cb12-17"></a><span class="co">##   ..$ cn_total : num [1:36212] 2 2 2 2 2 2 2 2 2 2 ...</span></span></code></pre></div>
 </div>
-<div id="2-add-lp-samples" class="section level5">
-<h5 class="hasAnchor">
-<a href="#2-add-lp-samples" class="anchor"></a>2) Add LP samples</h5>
+<div class="section level5">
+<h5 id="2-add-lp-samples">2) Add LP samples<a class="anchor" aria-label="anchor" href="#2-add-lp-samples"></a>
+</h5>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tree_with_lp_added</span> <span class="op">=</span> 
-  <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">example_lp_data</span>,  <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">example_lp_data</span>,  <span class="op">{</span>
     <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/add_lowpass_sampled.html">add_lowpass_sampled</a></span><span class="op">(</span>
       tree <span class="op">=</span> <span class="va">tree</span>, 
       phydata <span class="op">=</span> <span class="va">phydata</span>, 
@@ -185,15 +180,15 @@
 <span id="cb14-28"><a href="#cb14-28"></a><span class="co">## </span></span>
 <span id="cb14-29"><a href="#cb14-29"></a><span class="co">## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=</span></span></code></pre></div>
 </div>
-<div id="3-plots" class="section level5">
-<h5 class="hasAnchor">
-<a href="#3-plots" class="anchor"></a>3) Plots</h5>
+<div class="section level5">
+<h5 id="3-plots">3) Plots<a class="anchor" aria-label="anchor" href="#3-plots"></a>
+</h5>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">labeller_function</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"EPICC_C[0-9]+_"</span>, <span class="st">""</span>, <span class="va">x</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">labeller_function</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"EPICC_C[0-9]+_"</span>, <span class="st">""</span>, <span class="va">x</span><span class="op">)</span>
 
-<span class="va">tree_with_lp_added</span><span class="op">$</span><span class="va">tree</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu">MLLPT</span><span class="fu">:::</span><span class="fu"><a href="reference/remove_root_tip.html">remove_root_tip</a></span><span class="op">(</span><span class="st">"GL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>  
-  <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/set_lp_tiplength.html">set_lp_tiplength</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+<span class="va">tree_with_lp_added</span><span class="op">$</span><span class="va">tree</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> 
+  <span class="fu">MLLPT</span><span class="fu">:::</span><span class="fu"><a href="reference/remove_root_tip.html">remove_root_tip</a></span><span class="op">(</span><span class="st">"GL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>  
+  <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/set_lp_tiplength.html">set_lp_tiplength</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> 
   <span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_tree.html">plot_tree</a></span><span class="op">(</span>
     labeller_function <span class="op">=</span> <span class="va">labeller_function</span>, 
     pointsize <span class="op">=</span> <span class="fl">2</span>, 
@@ -204,25 +199,25 @@
 <code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik.html">plot_lp_loglik</a></span><span class="op">(</span>
     <span class="va">tree_with_lp_added</span>,
     labeller_function <span class="op">=</span> <span class="va">labeller_function</span>
-  <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>angle<span class="op">=</span><span class="fl">90</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle<span class="op">=</span><span class="fl">90</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="co">## Warning: Removed 20 rows containing missing values (geom_point).</span></span></code></pre></div>
 <p><img src="README_files/figure-gfm/loglik_plus_lp_example-1.png" width="200"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_loglik_edge.html">plot_lp_loglik_edge</a></span><span class="op">(</span>
     <span class="va">tree_with_lp_added</span>,
     labeller_function <span class="op">=</span> <span class="va">labeller_function</span>
-  <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="README_files/figure-gfm/loglik_edge_plus_lp_example-1.png" width="850"></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_lp_position_edge.html">plot_lp_position_edge</a></span><span class="op">(</span>
     <span class="va">tree_with_lp_added</span>,
     labeller_function <span class="op">=</span> <span class="va">labeller_function</span>
-  <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="README_files/figure-gfm/edge_position_example-1.png" width="850"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">MLLPT</span><span class="fu">::</span><span class="fu"><a href="reference/plot_sample_data.html">plot_sample_data</a></span><span class="op">(</span>
     <span class="va">tree_with_lp_added</span>,
-    external_purity_estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.90</span>, <span class="fl">0.48</span><span class="op">)</span>,
+    external_purity_estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.90</span>, <span class="fl">0.48</span><span class="op">)</span>,
     label_external_purity <span class="op">=</span> <span class="st">"GT"</span>,
     labeller_function <span class="op">=</span> <span class="va">labeller_function</span>
   <span class="op">)</span></code></pre></div>
@@ -232,55 +227,67 @@
 <hr>
 </div>
 </div>
-<div id="copyright" class="section level4">
-<h4 class="hasAnchor">
-<a href="#copyright" class="anchor"></a>Copyright</h4>
+<div class="section level4">
+<h4 id="copyright">Copyright<a class="anchor" aria-label="anchor" href="#copyright"></a>
+</h4>
 <p>Copyright (C) 2020, Timon Heide (<a href="mailto:timon.heide@icr.ac.uk" class="email">timon.heide@icr.ac.uk</a>)</p>
 <p>This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
-<p>You should have received a copy of the GNU General Public License along with this program. If not, see <a href="http://www.gnu.org/licenses/" class="uri">http://www.gnu.org/licenses/</a>.</p>
+<p>You should have received a copy of the GNU General Public License along with this program. If not, see <a href="http://www.gnu.org/licenses/" class="external-link uri">http://www.gnu.org/licenses/</a>.</p>
 <hr>
 </div>
-<div id="contacts" class="section level4">
-<h4 class="hasAnchor">
-<a href="#contacts" class="anchor"></a>Contacts</h4>
+<div class="section level4">
+<h4 id="contacts">Contacts<a class="anchor" aria-label="anchor" href="#contacts"></a>
+</h4>
 <p>Timon Heide, <em>Institute of Cancer Research, London, UK</em>.</p>
-<p><a href="mailto:timon.heide@icr.ac.uk"><img src="https://img.shields.io/badge/Email-timon.heide@icr.ac.uk-informational.svg?style=social"></a> <a href="https://github.com/T-Heide"><img src="https://img.shields.io/badge/Github-T--Heide-informational.svg?style=social&amp;logo=GitHub"></a></p>
+<p><a href="mailto:timon.heide@icr.ac.uk"><img src="https://img.shields.io/badge/Email-timon.heide@icr.ac.uk-informational.svg?style=social"></a> <a href="https://github.com/T-Heide" class="external-link"><img src="https://img.shields.io/badge/Github-T--Heide-informational.svg?style=social&amp;logo=GitHub"></a></p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing MLLPT</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Timon Heide <br><small class="roles"> Maintainer </small>  </li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/T-Heide/MLLPT/actions"><img src="https://github.com/T-Heide/MLLPT/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/T-Heide/MLLPT"><img src="https://codecov.io/gh/T-Heide/MLLPT/branch/master/graph/badge.svg?token=IAVSPV5QD2" alt="codecov"></a></li>
-<li><a href="https://www.codefactor.io/repository/github/t-heide/mllpt/overview/master"><img src="https://www.codefactor.io/repository/github/t-heide/mllpt/badge/master" alt="CodeFactor"></a></li>
+<li><a href="https://github.com/T-Heide/MLLPT/actions" class="external-link"><img src="https://github.com/T-Heide/MLLPT/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/T-Heide/MLLPT" class="external-link"><img src="https://codecov.io/gh/T-Heide/MLLPT/branch/master/graph/badge.svg?token=IAVSPV5QD2" alt="codecov"></a></li>
+<li><a href="https://www.codefactor.io/repository/github/t-heide/mllpt/overview/master" class="external-link"><img src="https://www.codefactor.io/repository/github/t-heide/mllpt/badge/master" alt="CodeFactor"></a></li>
 </ul>
 </div>
-</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Timon Heide.</p>
+  <p></p>
+<p>Developed by Timon Heide.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -288,6 +295,8 @@
 
   
 
+
+  
 
   </body>
 </html>
