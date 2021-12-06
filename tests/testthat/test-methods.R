@@ -233,6 +233,86 @@ test_that("lp assignment method works", {
 
 })
 
+test_that("lp assignment is consistent", {
+
+  load("data.rda")
+
+  tree_with_lp_added_expected =
+    readRDS("expected_example_results.rds") %>%
+    (function(x) {x$inital_values$n_cores = 1; return(x) })
+
+  set.seed(123)
+
+  tree_with_lp_added_obs =
+    with(example_lp_data,  {
+      MLLPT::add_lowpass_sampled(
+        tree = tree,
+        phydata = phydata,
+        sample_data = samples,
+        return_details = TRUE,
+        n_bootstraps = 10,
+        purity_estimates = c(1,1)
+      )
+    })
+
+
+  # compare the inputs used
+  expect_equal(
+    tree_with_lp_added_obs$inital_values,
+    tree_with_lp_added_expected$inital_values
+  )
+
+  # compare the mutation data used
+  expect_equal(
+    tree_with_lp_added_obs$mutations_per_edge,
+    tree_with_lp_added_expected$mutations_per_edge
+  )
+
+  expect_equal(
+    tree_with_lp_added_obs$mutation_data,
+    tree_with_lp_added_expected$mutation_data %>%
+      lapply(lapply, dplyr::filter, N > 0)
+  )
+
+  # compare the lik data
+  expect_equal(
+    tree_with_lp_added_obs$ll_per_edge,
+    tree_with_lp_added_expected$ll_per_edge
+  )
+
+  expect_equal(
+    tree_with_lp_added_obs$max_ll_per_edge,
+    tree_with_lp_added_expected$max_ll_per_edge
+  )
+
+  # compare the lik data
+  expect_equal(
+    tree_with_lp_added_obs$ll_per_edge,
+    tree_with_lp_added_expected$ll_per_edge
+  )
+
+  expect_equal(
+    tree_with_lp_added_obs$max_ll_per_edge,
+    tree_with_lp_added_expected$max_ll_per_edge
+  )
+
+
+  # compare the results
+  expect_equal(
+    ape::dist.topo(
+      ape::unroot(tree_with_lp_added_obs$tree),
+      ape::unroot(tree_with_lp_added_expected$tree)
+    ) %>% as.numeric(), 0
+  )
+
+  expect_equal(
+    tree_with_lp_added_obs$per_sample_results %>% dplyr::select(-idx),
+    tree_with_lp_added_expected$per_sample_results
+  )
+
+})
+
+
 test_that("mutation count data files can be read", {
 
   # objects for cn annotation:

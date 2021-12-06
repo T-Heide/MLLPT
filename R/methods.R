@@ -189,7 +189,7 @@ add_lowpass_sampled =
   # Adding of samples to the tree
   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-  added_tips = logical()
+  added_tips = list()
   per_edge_max_ll_data = list()
   per_edge_ll_data = list()
   per_edge_mdata = list()
@@ -200,7 +200,7 @@ add_lowpass_sampled =
   loss_frac_optim = numeric()
   mll = numeric()
   s_idx = numeric()
-  edges_samples = integer()
+  edges_samples = character()
   pi_samples = numeric()
   bootstrap_results = list()
 
@@ -227,11 +227,11 @@ add_lowpass_sampled =
     anc_nodes = phangorn::Ancestors(tree, next_node)
     anc_edges = as.character(node_to_edge[as.character(anc_nodes)])
     stats::na.omit(anc_edges)
-  })
+  }) %>% magrittr::set_names(names(edge_to_node))
 
   not_anc_edge = lapply(names(edge_to_node), function(x) {
     names(edge_to_node)[!names(edge_to_node) %in% c(anc_edge[[x]], x)]
-  })
+  }) %>% magrittr::set_names(names(edge_to_node))
 
 
   # add all samples to the tree:
@@ -599,6 +599,7 @@ add_lowpass_sampled =
   tree_mod = methods::as(tree_tm, "phylo")
   wh_relabel = tree_mod$tip.label %in% names(added_tips)
   tree_mod$tip.label[wh_relabel] = added_tips[tree_mod$tip.label[wh_relabel]]
+  tree_mod$tip.label = unlist(tree_mod$tip.label)
   tree_mod$node.label = NULL
 
 

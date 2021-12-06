@@ -195,3 +195,211 @@ remove_clonal_variants_tree =
     tree$edge.length[wh_edge] = 0
     return(tree)
   }
+
+get_id_mutated_before_edge = function(tree, muts_edge) {
+
+  muts_before_edge = list()
+  r_node = phangorn::getRoot(tree)
+
+  for (i in seq_len(NROW(tree$edge))) {
+    a_node = tree$edge[i, 1]
+    path = ape::nodepath(tree, r_node, a_node)
+    .get_edge = function(a, b) which(tree$edge[, 1] == a & tree$edge[, 2] == b)
+    edges = sapply(seq_along(path)[-1], function(i) .get_edge(path[i - 1], path[i]))
+    muts_before_edge[[as.character(i)]] = unique(unlist(muts_edge[as.character(edges)]))
+  }
+
+  return(muts_before_edge)
+}
+
+calc_post_lik_data = function(data_set) {
+
+  results = data_set$tree_lp_results[[1]]
+  mdata = c(data_set$mutation_data_deep, data_set$mutation_data_lp)
+
+  # tree data:
+  tree = results$inital_values$tree
+  mutated_on_edge = results$mutations_per_edge
+  mutated_before_edge = get_id_mutated_before_edge(tree, mutated_on_edge)
+
+
+  # lookup tables
+  edge_to_node = tree$edge[,2]
+  names(edge_to_node) = seq_along(edge_to_node)
+
+  node_to_edge = as.numeric(names(edge_to_node))
+  names(node_to_edge) = edge_to_node
+  node_to_edge = node_to_edge[order(as.numeric(names(node_to_edge)))]
+
+  muts_to_edge =
+    mutated_on_edge[sapply(mutated_on_edge, length)>1] %>%
+    reshape::melt() %>%
+    dplyr::filter(!value %in% value[duplicated(value)]) %>%
+    (function(x) magrittr::set_names(x$L1, x$value))
+
+
+  # check for missin mutation data
+  missing =  mean(!unique(unlist(mutated_on_edge)) %in% mdata[[1]]$id)
+  if (sum(missing)) {
+    cat(paste0("Missing ", signif(missing*100, 2), "% of mutation data.\n"))
+  }
+
+
+  # calculate post-prop for each sample:
+  results_all = list()
+
+  for (sample in names(mdata)) {
+
+    # get all variant data:
+    mdata_smp = mdata[[sample]] %>%
+      dplyr::mutate(edge = muts_to_edge[id]) %>%
+      dplyr::mutate(prior_m = NA)
+
+    # get ml estimates for position:
+    if (sample %in% rownames(results$per_sample_results)) {
+      prior_m = results$per_sample_results[sample,"pi"]
+      edge = results$per_sample_results[sample,"edge"]
+      purity = results$per_sample_results[sample,"purity"]
+      vaf_um = results$per_sample_results[sample,"background_vaf"]
+      depth = results$per_sample_results[sample,"background_vaf"]
+    } else {
+      prior_m = 1
+      edge = node_to_edge[as.character(which(tree$tip.label == sample))]
+      purity = results$purity_estimates[sample]
+      if (is.null(purity)) purity = 1
+      vaf_um = 0.01
+    }
+
+    # set prior lik:
+    mdata_smp$prior_m[mdata_smp$id %in% c(unlist(mutated_before_edge), unlist(mutated_on_edge))] = 0
+    mdata_smp$prior_m[mdata_smp$id %in% mutated_before_edge[[edge]]] = 1
+    mdata_smp$prior_m[mdata_smp$id %in% mutated_on_edge[[edge]]] = prior_m
+
+    # calculate posterior lik:
+    vaf_m = with(mdata_smp, mm * purity / (purity * copy_number + (1-purity) * 2)) # expected vaf for each mutation
+    mdata_smp$log_lik_m = dbinom(mdata_smp$alt_count, mdata_smp$depth, prob=vaf_m, log = TRUE)
+    mdata_smp$log_lik_um = dbinom(mdata_smp$alt_count, mdata_smp$depth, prob=vaf_um, log = TRUE)
+    mdata_smp$pD = with(mdata_smp, exp(log_lik_m) * prior_m + exp(log_lik_um) * (1 - prior_m))
+    mdata_smp$post_lik_m = with(mdata_smp, exp(log_lik_m) * prior_m / pD)
+
+    results_all[[sample]] = list(data=mdata_smp, purity=purity, vaf_bkg=vaf_um, edge=edge, sample=sample)
+  }
+
+  return(results_all)
+}
+
+
+calc_expected_vaf_density = function(x) {
+
+  # predict denisty
+  mdata_smp = x$data %>% dplyr::count(depth, copy_number, prior_m, mm, edge)
+  all_data = NULL
+
+  for (i in seq_len(NROW(mdata_smp))) {
+    if (is.na(mdata_smp$edge[i])) next()
+    for (n in seq(0, mdata_smp$depth[i])) {
+
+      N = mdata_smp$depth[i]
+      cn = mdata_smp$copy_number[i]
+      p_m = mdata_smp$prior_m[i]
+      mm = mdata_smp$mm[i]
+      edge = mdata_smp$edge[i]
+      v = x$purity
+
+      vaf_m = (mm * v) / (v * cn + (1-v) * 2) # expected vaf for each mutation
+      d0 = dbinom(n, N, scales::squish(x$vaf_bkg, c(1e-8, 1-1e-8)))
+      d0[d0 == 0] = .Machine$double.xmin
+      d1 = dbinom(n, N, scales::squish(vaf_m, c(1e-8, 1-1e-8)))
+      d1[d1 == 0] = .Machine$double.xmin
+
+      d = (d1 * p_m + d0 * (1 - p_m)) * mdata_smp$n[i]
+      dc = data.frame(alt_count=n, depth=N, d=d, edge=edge, row.names = NULL)
+      all_data = rbind(all_data, dc)
+    }
+  }
+
+  all_data %>%
+    split(., .$edge) %>%
+    lapply(dplyr::mutate, d=d / sum(d)) %>%
+    do.call(what=rbind) %>%
+    dplyr::mutate(d = d * tapply(mdata_smp$n, mdata_smp$edge, sum)[as.character(edge)]) %>%
+    dplyr::mutate(edge = factor(edge, 1:100, paste0("Edge ", 1:100)))
+}
+
+
+plot_vaf_post_lik_data = function(x, show_expected=TRUE) {
+
+  caption = paste0(
+    "Avg. depth: ", signif(mean(x$data$depth), 2),
+    ", Purity: ",  signif(x$purity, 3),
+    "; Background VAF: ", signif(x$vaf_bkg, 3)
+  )
+
+  if (mean(x$data$depth) < 10 & show_expected) {
+    expected_density =
+      calc_expected_vaf_density(x) %>%
+      dplyr::mutate(vaf=alt_count / depth) %>%
+      dplyr::group_by(vaf, edge) %>%
+      dplyr::summarise(d=sum(d)) %>%
+      dplyr::arrange(-vaf) %>%
+      dplyr::filter(!is.na(vaf))
+  } else {
+    expected_density =
+      NULL
+  }
+
+
+  plot_of_data =
+    x$data %>%
+    dplyr::filter(depth > 0) %>%
+    dplyr::mutate(edge = factor(edge, 1:100, paste0("Edge ", 1:100))) %>%
+    ggplot(aes(x=alt_count / depth)) +
+      cowplot::theme_cowplot() +
+      facet_wrap(~edge, scales = "free_y") +
+      geom_histogram(bins=20, aes(fill=signif(prior_m, 3))) +
+      ggtitle(x$sample) +
+      xlab("VAF") +
+      ylab("Count") +
+      labs(fill="p(M = 1)", color="", caption = caption) +
+      scale_fill_viridis_c(na.value="gray20", end = 0.8) +
+      scale_color_manual(values = "red")
+
+  if (!is.null(expected_density)) {
+    plot_of_data =
+      plot_of_data +
+      geom_freqpoly(
+        data = expected_density,
+        aes(x = vaf, weight = d, color = "Expected"),
+        alpha = 0.8,
+        bins = 20
+      )
+  }
+
+  return(plot_of_data)
+}
+
+plot_post_lik_data = function(x) {
+
+  caption = paste0(
+    "Avg. depth: ", signif(mean(x$data$depth), 2),
+    ", Purity: ",  signif(x$purity, 3),
+    "; Background VAF: ", signif(x$vaf_bkg, 3)
+  )
+
+  plot_of_data =
+    x$data %>%
+    dplyr::mutate(edge = factor(edge, 1:100, paste0("Edge ", 1:100))) %>%
+    dplyr::filter(!is.na(edge)) %>%
+    ggplot(aes(x = post_lik_m)) +
+      cowplot::theme_cowplot() +
+      facet_wrap( ~ edge, scales = "free_y") +
+      geom_histogram(bins = 20) +
+      ggtitle(x$sample) +
+      xlab("Posterior likelihood p(M=1|D)") +
+      ylab("Count") +
+      scale_fill_brewer(palette = "Set1", na.value = "gray20") +
+      labs(caption = caption)
+
+  return(plot_of_data)
+}
+

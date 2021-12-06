@@ -35,7 +35,7 @@ devtools::install_github("T-Heide/MLLPT")
 
 #### Getting started
 
-```{r cars}
+```{r libraries}
 library(MLLPT)
 library(phangorn)
 ```
@@ -70,6 +70,8 @@ str(example_lp_data$samples)
 ##### 2) Add LP samples
 
 ```{r add_samples}
+set.seed(123)
+
 tree_with_lp_added = 
   with(example_lp_data,  {
     MLLPT::add_lowpass_sampled(

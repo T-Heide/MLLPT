@@ -96,6 +96,8 @@ str(example_lp_data$samples)
 ##### 2) Add LP samples
 
 ``` r
+set.seed(123)
+
 tree_with_lp_added = 
   with(example_lp_data,  {
     MLLPT::add_lowpass_sampled(
@@ -118,8 +120,8 @@ tree_with_lp_added =
     ## New values:
     ## 
     ## - Background rate: 0.01 -> 2.220446e-16 
-    ## - Purity: 0.75 -> 0.75 
-    ## - MLL: -3.668373 -> -8.104628e-14 
+    ## - Purity: 0.75 -> 0.8314805 
+    ## - MLL: -345.2188 -> -192.6926 
     ## 
     ## => Added sample (confidence: 1)
     ## 
@@ -131,11 +133,11 @@ tree_with_lp_added =
     ## 
     ## New values:
     ## 
-    ## - Background rate: 0.01 -> 2.220446e-16 
-    ## - Purity: 0.75 -> 0.75 
-    ## - MLL: -5.522349 -> -9.614531e-14 
+    ## - Background rate: 0.01 -> 0.0001978822 
+    ## - Purity: 0.75 -> 0.5211209 
+    ## - MLL: -848.1092 -> -727.613 
     ## 
-    ## => Added sample (confidence: 0.983)
+    ## => Added sample (confidence: 0.997998)
     ## 
     ## -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=
 
