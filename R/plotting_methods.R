@@ -574,6 +574,12 @@ plot_tree =
     color_by = magrittr::set_names(rep("gray10", length(ids)), ids)
     color_scale = scale_color_identity()
   } else {
+
+    # modify color_by lookup names
+    wh = names(color_by) %in% names(new_label_base)
+    names(color_by)[wh] = new_label_base[names(color_by)[wh]]
+
+    # choose a color pal.
     if (is.numeric(color_by)) {
       color_scale = scale_color_viridis_c()
     } else if (all(is_color(color_by), na.rm = TRUE)) {
