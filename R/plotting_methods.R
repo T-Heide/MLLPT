@@ -533,8 +533,7 @@ plot_tree =
   if ("tree" %in% names(tree)) tree = tree$tree
   checkmate::assertClass(tree, "phylo", null.ok = FALSE)
   checkmate::assertNumber(HI, null.ok = TRUE)
-  if (is.factor(color_by)) checkmate::assertFactor(color_by, names = "named", null.ok = TRUE)
-    else checkmate::assertCharacter(color_by, names = "named", null.ok = TRUE)
+  checkmate::assertVector(color_by, names = "named", null.ok = TRUE)
   checkmate::assertNumber(linewidth, null.ok = FALSE, na.ok = FALSE, lower = 0, finite = TRUE)
   checkmate::assertNumber(pointsize, null.ok = FALSE, na.ok = FALSE, lower = 0, finite = TRUE)
   checkmate::assertNumber(textsize, null.ok = FALSE, na.ok = FALSE, lower = 0, finite = TRUE)
@@ -575,7 +574,13 @@ plot_tree =
     color_by = magrittr::set_names(rep("gray10", length(ids)), ids)
     color_scale = scale_color_identity()
   } else {
-    color_scale = scale_color_brewer(palette = "Set1", drop = FALSE)
+    if (is.numeric(color_by)) {
+      color_scale = scale_color_viridis_c()
+    } else if (all(is_color(color_by), na.rm = TRUE)) {
+      color_scale = scale_color_identity()
+    } else {
+      color_scale = scale_color_brewer(palette = "Set1", drop = FALSE)
+    }
   }
 
   plt =
@@ -835,4 +840,8 @@ plot_tree_and_cn_data =
 
   merged_plot
 
+}
+
+is_color = function(x) {
+  x %in% colors() | grepl("^#(\\d|[a-f]){6,8}$", x, ignore.case = TRUE)
 }
